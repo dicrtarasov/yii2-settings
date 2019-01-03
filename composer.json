@@ -1,0 +1,43 @@
+{
+	"name" : "dicr/yii2-settings",
+	"description" : "Settings provider for Yii2",
+	"type" : "library",
+	"authors" : [{
+			"name" : "Igor Tarasov",
+			"email" : "develop@dicr.org",
+			"homepage" : "http://dicr.org",
+			"role" : "developer"
+		}
+	],
+	"minimum-stability" : "stable",
+	"require" : {
+		"yiisoft/yii2" : "~2.0",
+		"dicr/yii2-helper" : "~1.1"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"dicr\\settings\\" : "src"
+		}
+	},
+	"keywords" : [
+		"php yii2 settings"
+	],
+	"repositories" : [{
+			"type" : "composer",
+			"url" : "https://asset-packagist.org"
+		}, {
+			"type" : "git",
+			"url" : "https://gitlab.com/dicr/yii2-helper.git",
+			"name" : "yii2-helper"
+		}
+	],
+	"homepage" : "https://gitlab.com/dicr/yii2-settings",
+	"support" : {
+		"source" : "https://gitlab.com/dicr/yii2-settings.git"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "~6",
+		"ext-pdo-sqlite3" : "*",
+		"ext-yaml" : "*"
+	}
+}
