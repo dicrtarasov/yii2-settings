@@ -14,16 +14,6 @@ use yii\base\Model;
 abstract class AbstractSettingsModel extends Model
 {
     /**
-     * Закрытый конструктор
-     *
-     * @param array $config
-     */
-    protected final function __construct(array $config = [])
-    {
-        parent::__construct($config);
-    }
-
-    /**
      * Загружает модель при создании.
      *
      * {@inheritDoc}
