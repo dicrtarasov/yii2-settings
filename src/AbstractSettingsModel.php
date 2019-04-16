@@ -6,14 +6,13 @@ use yii\base\Model;
 /**
  * Абстрактная модель настроек.
  *
+ * Используетс как синглетон через Model::instance()
+ *
  * @author Igor (Dicr) Tarasov <develop@dicr.org>
  * @version 2019
  */
 abstract class AbstractSettingsModel extends Model
 {
-    /** @var static[] экземпляры моделей настроек */
-    private static $_instances = [];
-
     /**
      * Закрытый конструктор
      *
@@ -25,22 +24,14 @@ abstract class AbstractSettingsModel extends Model
     }
 
     /**
-     * Возвращает экземпляр модели.
+     * Загружает модель при создании.
      *
-     * При создании экземпляра вызывает загрузку данных.
-     *
-     * @return static
+     * {@inheritDoc}
+     * @see \yii\base\BaseObject::init()
      */
-    public final static function instance()
+    public function init()
     {
-        $class = get_called_class();
-        if (!isset(self::$_instances[$class])) {
-            $instance = new static();
-            $instance->loadSettings();
-            self::$_instances[$class] = $instance;
-        }
-
-        return self::$_instances[$class];
+        $this->loadSettings();
     }
 
     /**
