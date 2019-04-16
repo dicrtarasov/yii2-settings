@@ -8,6 +8,7 @@ use yii\db\Query;
 use yii\di\Instance;
 use yii\helpers\Json;
 use yii\db\Schema;
+use yii\base\InvalidArgumentException;
 
 /**
  * Настройки в базе данных.
@@ -45,11 +46,12 @@ class DbSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * Инициализарует базу данных
+     * Инициализарует базу данных, создает таблицу
      */
     protected function initDatabase()
     {
         $tableName = preg_replace('~(^\{\{\%?)|(\}\}$)~uism', '', $this->table);
+
         $schema = $this->db->getSchema();
 
         if (! in_array($tableName, $schema->tableNames)) {
@@ -86,7 +88,13 @@ class DbSettingsStore extends AbstractSettingsStore
      */
     protected function decodeValue(string $value)
     {
-        return Json::decode($value);
+        try {
+            return Json::decode($value);
+        } catch (\Throwable $ex) {
+            \Yii::error($ex, __METHOD__);
+        }
+
+        return null;
     }
 
     /**
@@ -95,6 +103,10 @@ class DbSettingsStore extends AbstractSettingsStore
      */
     public function get(string $module, string $name = '', $default = null)
     {
+        if (empty($module)) {
+            throw new InvalidArgumentException('module');
+        }
+
         $query = (new Query())->select('[[value]]')
             ->from($this->table)
             ->where(['module' => $module]);
@@ -127,27 +139,30 @@ class DbSettingsStore extends AbstractSettingsStore
      */
     public function set(string $module, $name, $value = '')
     {
-        $values = [];
-        if (is_array($name)) {
-            $values = $name;
-        } else {
-            $values[$name] = $value;
+        if (empty($module)) {
+            throw new InvalidArgumentException('module');
         }
+
+        if (empty($name)) {
+            return $this;
+        }
+
+        $values = is_array($name) ? $name : [$name => $value];
 
         foreach ($values as $name => $value) {
             $value = (string) $this->encodeValue($value);
 
-            if ($value == '') {
+            if ($value === '') {
                 $this->delete($module, $name);
             } else {
-                // для совместимости вместо REPLACE используем delete/indert
-                $this->db->createCommand()
-                    ->delete($this->table, ['module' => $module,'name' => $name])
-                    ->execute();
-
-                $this->db->createCommand()
-                    ->insert($this->table, ['module' => $module,'name' => $name,'value' => $value])
-                    ->execute();
+                $this->db->createCommand(sprintf(
+                    'insert into %s set [[module]]=:module, [[name]]=:name, [[value]]=:value
+                    on duplicate key update [[value]]=:value', $this->table
+                ), [
+                    ':module' => $module,
+                    ':name' => $name,
+                    ':value' => $value
+                ]);
             }
         }
 
@@ -160,6 +175,10 @@ class DbSettingsStore extends AbstractSettingsStore
      */
     public function delete(string $module, string $name = '')
     {
+        if (empty($module)) {
+            throw new InvalidArgumentException('module');
+        }
+
         $conds = ['module' => $module];
 
         if ($name != '') {

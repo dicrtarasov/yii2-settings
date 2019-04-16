@@ -37,12 +37,18 @@ class YamlSettingsStore extends AbstractSettingsStore
     protected function loadData()
     {
         if (! isset($this->settings)) {
-            if (@file_exists($this->filename)) {
+            if (@is_file($this->filename)) {
                 $this->settings = @\yaml_parse_file($this->filename);
+                if ($this->settings === false) {
+                    $err = error_get_last();
+                    error_clear_last();
+                    throw new SettingsException('ошибка загрузки файла: ' . $this->filename . ': ' . $err['message']);
+                }
             } else {
                 $this->settings = [];
             }
         }
+
         return $this->settings;
     }
 
@@ -56,8 +62,11 @@ class YamlSettingsStore extends AbstractSettingsStore
     {
         $this->settings = $settings;
         if (! @\yaml_emit_file($this->filename, $this->settings, YAML_UTF8_ENCODING, YAML_LN_BREAK)) {
-            throw new SettingsException('ошибка сохранения файла: ' . $this->filename);
+            $err = error_get_last();
+            error_clear_last();
+            throw new SettingsException('ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
         }
+
         return $this;
     }
 
@@ -104,6 +113,7 @@ class YamlSettingsStore extends AbstractSettingsStore
         }
 
         $this->saveData($settings);
+
         return $this;
     }
 
@@ -117,10 +127,11 @@ class YamlSettingsStore extends AbstractSettingsStore
         if ($name == '') {
             unset($settings[$module]);
         } else {
-            ArrayHelper::remove($settings, [$module,$name]);
+            ArrayHelper::remove($settings, [$module, $name]);
         }
 
         $this->saveData($settings);
+
         return $this;
     }
 }

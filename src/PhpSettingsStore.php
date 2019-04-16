@@ -38,12 +38,18 @@ class PhpSettingsStore extends AbstractSettingsStore
     protected function loadData()
     {
         if (! isset($this->settings)) {
-            if (@file_exists($this->filename)) {
-                $this->settings = @include ($this->filename);
+            if (@is_file($this->filename)) {
+                $this->settings = @include($this->filename);
+                if (!is_array($this->settings)) {
+                    $err = error_get_last();
+                    error_clear_last();
+                    throw new SettingsException('шибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
+                }
             } else {
                 $this->settings = [];
             }
         }
+
         return $this->settings;
     }
 
@@ -56,9 +62,13 @@ class PhpSettingsStore extends AbstractSettingsStore
     protected function saveData(array $settings)
     {
         $this->settings = $settings;
-        if (! @file_put_contents($this->filename, '<?php return ' . var_export($this->settings, true) . ';')) {
-            throw new SettingsException('ошибка сохранения файла: ' . $this->filename);
+
+        if (@file_put_contents($this->filename, '<?php return ' . var_export($this->settings, true) . ';') === false) {
+            $err = error_get_last();
+            error_clear_last();
+            throw new SettingsException('ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
         }
+
         return $this;
     }
 
