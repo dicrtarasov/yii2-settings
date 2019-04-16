@@ -19,7 +19,7 @@ abstract class AbstractSettingsModel extends Model
      *
      * @param array $config
      */
-    protected function __construct(array $config = [])
+    protected final function __construct(array $config = [])
     {
         parent::__construct($config);
     }
