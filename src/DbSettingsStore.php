@@ -2,13 +2,13 @@
 namespace dicr\settings;
 
 use dicr\helper\ArrayHelper;
+use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\db\Connection;
 use yii\db\Query;
+use yii\db\Schema;
 use yii\di\Instance;
 use yii\helpers\Json;
-use yii\db\Schema;
-use yii\base\InvalidArgumentException;
 
 /**
  * Настройки в базе данных.
@@ -83,10 +83,10 @@ class DbSettingsStore extends AbstractSettingsStore
     /**
      * Декодирует значение из базы
      *
-     * @param string $value
+     * @param string|null $value
      * @return mixed
      */
-    protected function decodeValue(string $value)
+    protected function decodeValue($value)
     {
         try {
             return Json::decode($value);
@@ -155,14 +155,17 @@ class DbSettingsStore extends AbstractSettingsStore
             if ($value === '') {
                 $this->delete($module, $name);
             } else {
-                $this->db->createCommand(sprintf(
-                    'insert into %s set [[module]]=:module, [[name]]=:name, [[value]]=:value
-                    on duplicate key update [[value]]=:value', $this->table
-                ), [
-                    ':module' => $module,
-                    ':name' => $name,
-                    ':value' => $value
-                ]);
+                // для совместимости с sqlite делаем delete/insert вместо on-duplicate key
+                $this->db->createCommand()->delete($this->table, [
+                    'module' => $module,
+                    'name' => $name
+                ])->execute();
+
+                $this->db->createCommand()->insert($this->table, [
+                    'module' => $module,
+                    'name' => $name,
+                    'value' => $value
+                ])->execute();
             }
         }
 

@@ -2,8 +2,8 @@
 namespace dicr\settings;
 
 use yii\base\Component;
-use yii\base\Model;
 use yii\base\InvalidArgumentException;
+use yii\base\Model;
 
 /**
  * Абстрактное хранилище настроек.
@@ -87,6 +87,7 @@ abstract class AbstractSettingsStore extends Component
 
         $module = $this->getModuleName($model);
         $values = $this->get($module);
+
         $model->setAttributes($values, $safeOnly);
 
         return $this;
@@ -107,7 +108,7 @@ abstract class AbstractSettingsStore extends Component
 
         $module = $this->getModuleName($model);
 
-        $this->set($module, $model->getAttributes());
+        $this->set($module, $model->attributes);
 
         return $this;
     }

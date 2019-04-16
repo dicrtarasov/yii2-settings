@@ -1,7 +1,7 @@
 <?php
 namespace dicr\tests;
 
-use yii\base\Model;
+use dicr\settings\AbstractSettingsModel;
 
 /**
  * Тестовая модель
@@ -9,9 +9,8 @@ use yii\base\Model;
  * @author Igor (Dicr) Tarasov <develop@dicr.org>
  * @version 2019
  */
-class TestModel extends Model
+class TestModel extends AbstractSettingsModel
 {
-
 	const DATA = [
 		'null' => null,
 		'boolean' => false,
@@ -34,4 +33,11 @@ class TestModel extends Model
 	public $string;
 
 	public $array;
+
+	public function rules()
+	{
+	    return [
+            [['null', 'boolean', 'zero', 'float', 'string', 'array'], 'safe']
+	    ];
+	}
 }

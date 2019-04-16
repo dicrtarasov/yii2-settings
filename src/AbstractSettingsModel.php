@@ -50,12 +50,17 @@ abstract class AbstractSettingsModel extends Model
     /**
      * Сохраняет модель в хранилище настроек
      *
-     * @return $this
+     * @param bool $validate выполнить валидацию
+     * @return bool при ошибке валидации возвращает false
      */
-    public function saveSettings()
+    public function save(bool $validate = true)
     {
+        if ($validate && !$this->validate()) {
+            return false;
+        }
+
         static::settingsStore()->saveModel($this);
 
-        return $this;
+        return true;
     }
 }
