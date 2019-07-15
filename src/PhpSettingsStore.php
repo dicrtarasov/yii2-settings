@@ -1,8 +1,8 @@
 <?php
 namespace dicr\settings;
 
-use dicr\helper\ArrayHelper;
 use yii\base\InvalidConfigException;
+use dicr\helper\ArrayHelper;
 
 /**
  * Настройки в PHP-файле.

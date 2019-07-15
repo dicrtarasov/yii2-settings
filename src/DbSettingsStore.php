@@ -1,7 +1,6 @@
 <?php
 namespace dicr\settings;
 
-use dicr\helper\ArrayHelper;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\db\Connection;
@@ -9,6 +8,7 @@ use yii\db\Query;
 use yii\db\Schema;
 use yii\di\Instance;
 use yii\helpers\Json;
+use dicr\helper\ArrayHelper;
 
 /**
  * Настройки в базе данных.
