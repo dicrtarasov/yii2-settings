@@ -1,6 +1,7 @@
 <?php
 namespace dicr\settings;
 
+use dicr\helper\ArrayHelper;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\db\Connection;
@@ -8,17 +9,17 @@ use yii\db\Query;
 use yii\db\Schema;
 use yii\di\Instance;
 use yii\helpers\Json;
-use dicr\helper\ArrayHelper;
 
 /**
  * Настройки в базе данных.
+ *
+ * Сруктура базы данных:
  *
  * @author Igor (Dicr) Tarasov <develop@dicr.org>
  * @version 180610
  */
 class DbSettingsStore extends AbstractSettingsStore
 {
-
     /** @var \yii\db\Connection база данных */
     public $db = 'db';
 
@@ -31,6 +32,8 @@ class DbSettingsStore extends AbstractSettingsStore
      */
     public function init()
     {
+        parent::init();
+
         if (is_string($this->db)) {
             $this->db = \Yii::$app->get($this->db, true);
         }
@@ -64,7 +67,7 @@ class DbSettingsStore extends AbstractSettingsStore
                 ->execute();
 
             $this->db->createCommand()
-                ->createIndex('module-name', $this->table, ['module','name'], true)
+                ->createIndex('module-name', $this->table, ['module', 'name'], true)
                 ->execute();
         }
     }
@@ -89,9 +92,9 @@ class DbSettingsStore extends AbstractSettingsStore
     protected function decodeValue($value)
     {
         try {
-            return Json::decode($value);
-        } catch (\Throwable $ex) {
-            \Yii::error($ex, __METHOD__);
+            return Json::decode($value, true);
+        } catch (InvalidArgumentException $ex) {
+            // noop
         }
 
         return null;
@@ -122,7 +125,7 @@ class DbSettingsStore extends AbstractSettingsStore
 
         // запрос всех значение модели
         $values = [];
-        foreach ($query->addSelect('[[name]]')->each(100, $this->db) as $row) {
+        foreach ($query->addSelect('[[name]]')->all($this->db) as $row) {
             $values[$row['name']] = $this->decodeValue($row['value']);
         }
 
@@ -152,7 +155,7 @@ class DbSettingsStore extends AbstractSettingsStore
         foreach ($values as $name => $value) {
             $value = (string) $this->encodeValue($value);
 
-            if ($value === '') {
+            if ($value === '' || $value === null) {
                 $this->delete($module, $name);
             } else {
                 // для совместимости с sqlite делаем delete/insert вместо on-duplicate key
