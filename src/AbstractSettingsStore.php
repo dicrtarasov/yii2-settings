@@ -87,7 +87,6 @@ abstract class AbstractSettingsStore extends Component
 
         $module = $this->getModuleName($model);
         $values = $this->get($module);
-
         $model->setAttributes($values, $safeOnly);
 
         return $this;
