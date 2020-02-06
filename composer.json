@@ -1,44 +1,49 @@
 {
-	"name" : "dicr/yii2-settings",
-	"description" : "Settings component for Yii2",
-	"type" : "yii2-extension",
-	"authors" : [{
-			"name" : "Igor Tarasov",
-			"email" : "develop@dicr.org",
-			"homepage" : "http://dicr.org",
-			"role" : "developer"
-		}
-	],
-	"minimum-stability" : "stable",
-	"require" : {
-		"php" : ">=7.0",
-		"yiisoft/yii2" : "~2.0",
-		"dicr/yii2-helper" : "~2.0"
-	},
-	"autoload" : {
-		"psr-4" : {
-			"dicr\\settings\\" : "src"
-		}
-	},
-	"keywords" : [
-		"php yii2 settings"
-	],
-	"repositories" : [{
-			"type" : "composer",
-			"url" : "https://asset-packagist.org"
-		}, {
-			"type" : "git",
-			"url" : "https://gitlab.com/dicr/yii2-helper.git",
-			"name" : "yii2-helper"
-		}
-	],
-	"homepage" : "https://gitlab.com/dicr/yii2-settings",
-	"support" : {
-		"source" : "https://gitlab.com/dicr/yii2-settings.git"
-	},
-	"require-dev" : {
-		"phpunit/phpunit" : "~6",
-		"ext-sqlite3" : "*",
-		"ext-yaml" : "*"
-	}
+    "name": "dicr/yii2-settings",
+    "license": "MIT",
+    "description": "Компонент для сохранения настроек Yii2",
+    "type": "yii2-extension",
+    "authors": [
+        {
+            "name": "Igor Tarasov",
+            "email": "develop@dicr.org",
+            "homepage": "http://dicr.org",
+            "role": "developer"
+        }
+    ],
+    "keywords": ["dicr", "php", "yii2", "settings"],
+    "homepage": "https://gitlab.com/dicr/yii2-settings",
+    "support": {
+        "source": "https://gitlab.com/dicr/yii2-settings.git"
+    },
+    "autoload": {
+        "psr-4": {
+            "dicr\\settings\\": "src"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.2",
+        "yiisoft/yii2": "~2.0.32",
+        "dicr/yii2-helper": "~2.1.9"
+    },
+    "suggest": {
+        "ext-yaml": "Needed form YML settings store"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "phpunit/phpunit": "~6.5.14",
+        "ext-sqlite3": "*",
+        "ext-yaml": "*"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }, {
+            "type": "git",
+            "url": "https://gitlab.com/dicr/yii2-helper.git",
+            "name": "yii2-helper"
+        }
+    ]
 }

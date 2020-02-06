@@ -1,15 +1,22 @@
 <?php
+/**
+ * @copyright 2019-2020 Dicr http://dicr.org
+ * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 07.02.20 03:13:24
+ */
+
+declare(strict_types = 1);
+
 namespace dicr\settings;
 
 use yii\base\Model;
+use yii\di\Instance;
 
 /**
  * Абстрактная модель настроек.
  *
  * Используетс как синглетон через Model::instance()
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 2019
  */
 abstract class AbstractSettingsModel extends Model
 {
@@ -17,21 +24,28 @@ abstract class AbstractSettingsModel extends Model
      * Загружает модель при создании.
      *
      * {@inheritDoc}
-     * @see \yii\base\BaseObject::init()
+     * @throws \dicr\settings\SettingsException
+     * @throws \yii\base\InvalidConfigException
      */
     public function init()
     {
+        parent::init();
+
+        // загружаем настройки
         $this->loadSettings();
     }
 
     /**
-     * Возвращает хранилище настроек
+     * Возвращает хранилище настроек.
+     * Для переопределения в дочерних реализациях.
      *
      * @return \dicr\settings\AbstractSettingsStore
+     * @throws \yii\base\InvalidConfigException
      */
-    public static function settingsStore()
+    public static function store()
     {
-        return \Yii::$app->settings;
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return Instance::ensure('settings', AbstractSettingsStore::class);
     }
 
     /**
@@ -39,10 +53,12 @@ abstract class AbstractSettingsModel extends Model
      *
      * @param bool $safeOnly только безопасные атрибуты
      * @return $this
+     * @throws \dicr\settings\SettingsException
+     * @throws \yii\base\InvalidConfigException
      */
     public function loadSettings(bool $safeOnly = true)
     {
-        static::settingsStore()->loadModel($this, $safeOnly);
+        static::store()->loadModel($this, $safeOnly);
 
         return $this;
     }
@@ -52,14 +68,16 @@ abstract class AbstractSettingsModel extends Model
      *
      * @param bool $validate выполнить валидацию
      * @return bool при ошибке валидации возвращает false
+     * @throws \dicr\settings\SettingsException
+     * @throws \yii\base\InvalidConfigException
      */
     public function save(bool $validate = true)
     {
-        if ($validate && !$this->validate()) {
+        if ($validate && ! $this->validate()) {
             return false;
         }
 
-        static::settingsStore()->saveModel($this);
+        static::store()->saveModel($this);
 
         return true;
     }

@@ -1,4 +1,12 @@
 <?php
+/**
+ * @copyright 2019-2020 Dicr http://dicr.org
+ * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 07.02.20 03:20:14
+ */
+
+declare(strict_types = 1);
 namespace dicr\tests;
 
 use dicr\settings\AbstractSettingsModel;
@@ -11,33 +19,37 @@ use dicr\settings\AbstractSettingsModel;
  */
 class TestModel extends AbstractSettingsModel
 {
-	const DATA = [
-		'null' => null,
-		'boolean' => false,
-		'zero' => 0,
-		'float' => -1.23,
-		'string' => "Иванов Иван\nИванович",
-		'array' => [
-			1, 2, 'a' => 'b'
-		]
-	];
+    /** @var array набор тестовых данных модели */
+    public const TEST_DATA = [
+        'null' => null,
+        'boolean' => false,
+        'zero' => 0,
+        'float' => - 1.23,
+        'string' => "Иванов Иван\nИванович",
+        'array' => [
+            1, 2, 'a' => 'b'
+        ]
+    ];
 
-	public $null;
+    public $null;
 
-	public $boolean;
+    public $boolean;
 
-	public $zero;
+    public $zero;
 
-	public $float;
+    public $float;
 
-	public $string;
+    public $string;
 
-	public $array;
+    public $array;
 
-	public function rules()
-	{
-	    return [
+    /**
+     * @inheritDoc
+     */
+    public function rules()
+    {
+        return [
             [['null', 'boolean', 'zero', 'float', 'string', 'array'], 'safe']
-	    ];
-	}
+        ];
+    }
 }

@@ -1,15 +1,22 @@
 <?php
+/**
+ * @copyright 2019-2020 Dicr http://dicr.org
+ * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 07.02.20 01:43:14
+ */
+
+declare(strict_types = 1);
 namespace dicr\settings;
 
 use yii\base\Component;
-use yii\base\InvalidArgumentException;
 use yii\base\Model;
+use function get_class;
 
 /**
  * Абстрактное хранилище настроек.
  *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 180610
+ * @noinspection MissingPropertyAnnotationsInspection
  */
 abstract class AbstractSettingsStore extends Component
 {
@@ -18,30 +25,29 @@ abstract class AbstractSettingsStore extends Component
      *
      * @param string $module имя модуля/модели
      *
-     * @param string $name название настройки
+     * @param string|null $name название настройки
      *  Если пустое, то возвращает ассоциативный массив всех настроек модуля.
      *
      * @param mixed $default значение по-умолчанию.
      *  Если name задано, то значение настройки, иначе асоциативный массив значений по-умолчанию.
      *
+     * @return mixed если name задан то значение настройки, иначе ассоциативный массив всех настроек модуля
      * @throws \dicr\settings\SettingsException
      *
-     * @return mixed если name задан то значение настройки, иначе ассоциативный массив всех настроек модуля
      */
-    public abstract function get(string $module, string $name = '', $default = null);
+    abstract public function get(string $module, string $name = null, $default = null);
 
     /**
      * Сохраняет значение настройки/настроек.
-     *
      * Если значение пустое, то удаляет его.
      *
      * @param string $module название модуля/модели
      * @param string|array $name название параметра или ассоциативный массив параметр => значение
      * @param mixed $value значение если name как скаляр
-     * @throws \dicr\settings\SettingsException
      * @return $this
+     * @throws \dicr\settings\SettingsException
      */
-    public abstract function set(string $module, $name, $value = '');
+    abstract public function set(string $module, $name, $value = null);
 
     /**
      * Удалить значение.
@@ -50,24 +56,19 @@ abstract class AbstractSettingsStore extends Component
      * @param string $module название модуля/модели.
      * @param string|null $name название настройки.
      *        Если не задано, то удаляются все настройи модуля.
-     * @throws \dicr\settings\SettingsException
      * @return $this
+     * @throws \dicr\settings\SettingsException
      */
-    public abstract function delete(string $module, string $name = '');
+    abstract public function delete(string $module, string $name = null);
 
     /**
      * Возвращает имя модуля настроек для модели.
      *
      * @param \yii\base\Model $model
-     * @throws InvalidArgumentException
      * @return string класс модели
      */
     protected function getModuleName(Model $model)
     {
-        if (empty($model)) {
-            throw new InvalidArgumentException('model');
-        }
-
         return get_class($model);
     }
 
@@ -76,18 +77,14 @@ abstract class AbstractSettingsStore extends Component
      *
      * @param \yii\base\Model $model модель для загрузки аттрибутов из настроек
      * @param bool $safeOnly только безопасные аттрибуты
-     * @throws \dicr\settings\SettingsException
      * @return $this
+     * @throws \dicr\settings\SettingsException
      */
-    public function loadModel(Model $model, bool $safeOnly = true)
+    public function loadModel(Model $model, bool $safeOnly = null)
     {
-        if (empty($model)) {
-            throw new InvalidArgumentException('model');
-        }
-
         $module = $this->getModuleName($model);
         $values = $this->get($module);
-        $model->setAttributes($values, $safeOnly);
+        $model->setAttributes($values, $safeOnly ?? false);
 
         return $this;
     }
@@ -96,18 +93,13 @@ abstract class AbstractSettingsStore extends Component
      * Сохраняет аттрибуты модели в настройах.
      *
      * @param \yii\base\Model $model модель для сохранения аттрибутов в настройки.
-     * @throws \dicr\settings\SettingsException
      * @return $this
+     * @throws \dicr\settings\SettingsException
      */
     public function saveModel(Model $model)
     {
-        if (empty($model)) {
-            throw new InvalidArgumentException('model');
-        }
-
         $module = $this->getModuleName($model);
-
-        $this->set($module, $model->attributes);
+        $this->set($module, $model->getAttributes());
 
         return $this;
     }

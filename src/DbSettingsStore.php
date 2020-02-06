@@ -1,61 +1,70 @@
 <?php
+/**
+ * @copyright 2019-2020 Dicr http://dicr.org
+ * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 07.02.20 03:34:41
+ */
+
+declare(strict_types = 1);
 namespace dicr\settings;
 
 use dicr\helper\ArrayHelper;
-use yii\base\InvalidArgumentException;
+use Throwable;
+use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\Connection;
 use yii\db\Query;
 use yii\db\Schema;
 use yii\di\Instance;
+use yii\helpers\Json;
+use function in_array;
+use function is_array;
 
 /**
- * Настройки в базе данных.
+ * Настройки, хранимые в таблице базы данных.
  *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 180610
+ * @noinspection MissingPropertyAnnotationsInspection
  */
 class DbSettingsStore extends AbstractSettingsStore
 {
-
     /** @var \yii\db\Connection база данных */
     public $db = 'db';
 
     /** @var string имя таблицы в базе данных */
-    public $table = '{{settings}}';
+    public $tableName = '{{settings}}';
 
     /**
      * {@inheritdoc}
-     * @see \yii\base\BaseObject::init()
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\NotSupportedException
+     * @throws \yii\db\Exception
      */
     public function init()
     {
-        if (is_string($this->db)) {
-            $this->db = \Yii::$app->get($this->db, true);
-        }
+        $this->db = Instance::ensure($this->db, Connection::class);
 
-        Instance::ensure($this->db, Connection::class);
-
-        $this->table = trim($this->table);
-        if (empty($this->table)) {
-            throw new InvalidConfigException('пустое имя таблицы');
+        $this->tableName = trim($this->tableName);
+        if (empty($this->tableName)) {
+            throw new InvalidConfigException('tableName');
         }
 
         $this->initDatabase();
     }
 
     /**
-     * Инициализарует базу данных, создает таблицу
+     * Инициализарует базу данных (создает таблицу).
+     *
+     * @throws \yii\base\NotSupportedException
+     * @throws \yii\db\Exception
      */
     protected function initDatabase()
     {
-        $tableName = preg_replace('~(^\{\{\%?)|(\}\}$)~uism', '', $this->table);
-
         $schema = $this->db->getSchema();
 
-        if (! in_array($tableName, $schema->tableNames)) {
+        if (! in_array($schema->getRawTableName($this->tableName), $schema->tableNames, true)) {
             $this->db->createCommand()
-                ->createTable($this->table, [
+                ->createTable($this->tableName, [
                     'module' => Schema::TYPE_STRING . ' NOT NULL',
                     'name' => Schema::TYPE_STRING . ' NOT NULL',
                     'value' => Schema::TYPE_TEXT
@@ -63,7 +72,7 @@ class DbSettingsStore extends AbstractSettingsStore
                 ->execute();
 
             $this->db->createCommand()
-                ->createIndex('module-name', $this->table, ['module','name'], true)
+                ->createIndex('module-name', $this->tableName, ['module', 'name'], true)
                 ->execute();
         }
     }
@@ -76,7 +85,13 @@ class DbSettingsStore extends AbstractSettingsStore
      */
     protected function encodeValue($value)
     {
-        return json_encode($value, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+        try {
+            return Json::encode($value);
+        } catch (Throwable $ex) {
+            Yii::error($ex, __METHOD__);
+
+            return null;
+        }
     }
 
     /**
@@ -88,41 +103,40 @@ class DbSettingsStore extends AbstractSettingsStore
     protected function decodeValue($value)
     {
         try {
-            return @json_decode($value, true);
-        } catch (\Throwable $ex) {
-            \Yii::error($ex, __METHOD__);
-        }
+            return Json::decode($value);
+        } catch (Throwable $ex) {
+            Yii::warning($ex, __METHOD__);
 
-        return null;
+            return null;
+        }
     }
 
     /**
      * {@inheritdoc}
      * @see \dicr\settings\AbstractSettingsStore::get()
      */
-    public function get(string $module, string $name = '', $default = null)
+    public function get(string $module, string $name = null, $default = null)
     {
-        if (empty($module)) {
-            throw new InvalidArgumentException('module');
-        }
-
-        $query = (new Query())->select('[[value]]')
-            ->from($this->table)
+        $query = (new Query())->select('value')
+            ->from($this->tableName)
             ->where(['module' => $module]);
 
-        if ($name !== '') {
+        if ($name !== null) {
             // запрос одного значения
-            $value = $query->andWhere(['[[name]]' => $name])
+            $value = $query->andWhere(['name' => $name])
                 ->limit(1)
                 ->scalar($this->db);
-            return $value === null || $value === '' ? $default : $this->decodeValue($value);
+
+            return $value ?? $this->decodeValue($value);
         }
 
         // запрос всех значение модели
-        $values = [];
-        foreach ($query->addSelect('[[name]]')->each(100, $this->db) as $row) {
-            $values[$row['name']] = $this->decodeValue($row['value']);
-        }
+        $query->addSelect('name')
+            ->indexBy('name');
+
+        $values = array_map(function(string $val) {
+            return $this->decodeValue($val);
+        }, $query->column($this->db));
 
         if (is_array($default)) {
             $values = ArrayHelper::merge($default, $values);
@@ -133,34 +147,26 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
+     * @throws \yii\db\Exception
      * @see \dicr\settings\AbstractSettingsStore::set()
      */
-    public function set(string $module, $name, $value = '')
+    public function set(string $module, $name, $value = null)
     {
-        if (empty($module)) {
-            throw new InvalidArgumentException('module');
-        }
-
-        if (empty($name)) {
-            return $this;
-        }
-
-        $values = is_array($name) ? $name : [$name => $value];
-
-        foreach ($values as $name => $value) {
-            if ($value === '') {
-                $this->delete($module, $name);
+        foreach (is_array($name) ? $name : [$name => $value] as $key => $val) {
+            if ($val === null || $val === '') {
+                $this->delete($module, $key);
             } else {
                 // для совместимости с sqlite делаем delete/insert вместо on-duplicate key
-                $this->db->createCommand()->delete($this->table, [
+                $this->db->createCommand()->delete($this->tableName, [
                     'module' => $module,
-                    'name' => $name
+                    'name' => $key
                 ])->execute();
 
-                $this->db->createCommand()->insert($this->table, [
+                /** @noinspection MissedFieldInspection */
+                $this->db->createCommand()->insert($this->tableName, [
                     'module' => $module,
-                    'name' => $name,
-                    'value' => $this->encodeValue($value)
+                    'name' => $key,
+                    'value' => $this->encodeValue($val)
                 ])->execute();
             }
         }
@@ -170,22 +176,19 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
+     * @throws \yii\db\Exception
      * @see \dicr\settings\AbstractSettingsStore::delete()
      */
-    public function delete(string $module, string $name = '')
+    public function delete(string $module, string $name = null)
     {
-        if (empty($module)) {
-            throw new InvalidArgumentException('module');
-        }
-
         $conds = ['module' => $module];
 
-        if ($name != '') {
+        if ($name !== null) {
             $conds['name'] = $name;
         }
 
         $this->db->createCommand()
-            ->delete($this->table, $conds)
+            ->delete($this->tableName, $conds)
             ->execute();
 
         return $this;

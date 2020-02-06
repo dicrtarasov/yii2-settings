@@ -3,27 +3,28 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 03:03:28
+ * @version 07.02.20 03:37:41
  */
 
 declare(strict_types = 1);
+
 namespace dicr\tests;
 
-use dicr\settings\PhpSettingsStoreStore;
+use dicr\settings\SerializeSettingsStore;
 
 /**
- * Test PhpSettingsStore
+ * Test SerializeSettingsStore
  */
-class PhpSettingsTest extends AbstractTestCase
+class SerializeSettingsTest extends AbstractTestCase
 {
     /**
      * @inheritDoc
-     *
+     * @return void|\yii\console\Application
      * @throws \yii\base\InvalidConfigException
      */
     public function setUp()
     {
-        parent::setUp()->set('settings', new PhpSettingsStoreStore([
+        parent::setUp()->set('settings', new SerializeSettingsStore([
             'filename' => $this->filename
         ]));
     }
