@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 02:57:46
+ * @version 07.02.20 03:59:11
  */
 
 /** @noinspection PhpComposerExtensionStubsInspection */
@@ -16,7 +16,7 @@ use function yaml_parse_file;
 /**
  * Настройки в Yaml-файле.
  */
-class YamlSettingsStoreStore extends AbstractFileSettingsStore
+class YamlSettingsStore extends AbstractFileSettingsStore
 {
     /** @var array кэш настроек */
     private $_settings;
@@ -51,7 +51,7 @@ class YamlSettingsStoreStore extends AbstractFileSettingsStore
      * Сохраняет настройки в файл
      *
      * @param array $settings to save
-     * @return \dicr\settings\YamlSettingsStoreStore
+     * @return \dicr\settings\YamlSettingsStore
      * @throws SettingsException
      */
     protected function saveData(array $settings)

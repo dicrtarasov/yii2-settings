@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 02:57:46
+ * @version 07.02.20 03:58:55
  */
 
 declare(strict_types = 1);
@@ -14,7 +14,7 @@ use function is_array;
 /**
  * Настройки, хранимые в файле PHP.
  */
-class PhpSettingsStoreStore extends AbstractFileSettingsStore
+class PhpSettingsStore extends AbstractFileSettingsStore
 {
     /** @var array кэш настроек */
     private $_settings;
