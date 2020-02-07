@@ -3,11 +3,14 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 03:37:41
+ * @version 07.02.20 07:06:03
  */
 
 declare(strict_types = 1);
 namespace dicr\settings;
+
+use Throwable;
+use Yii;
 
 /**
  * Настройки, хранимые в файле PHP.
@@ -23,7 +26,6 @@ class SerializeSettingsStore extends AbstractFileSettingsStore
      * Загружает настройки из файла
      *
      * @return array
-     * @throws \dicr\settings\SettingsException
      */
     protected function loadData()
     {
@@ -31,21 +33,27 @@ class SerializeSettingsStore extends AbstractFileSettingsStore
             $this->_settings = [];
 
             if (file_exists($this->filename)) {
-                error_clear_last();
-                /** @noinspection PhpUsageOfSilenceOperatorInspection */
-                $content = @file_get_contents($this->filename);
-                if ($content === false) {
-                    $this->_settings = [];
-                    $err = error_get_last();
-                    throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
-                }
+                try {
+                    error_clear_last();
 
-                /** @noinspection PhpUsageOfSilenceOperatorInspection */
-                $this->_settings = @unserialize($content, false);
-                if ($this->_settings === false) {
+                    /** @noinspection PhpUsageOfSilenceOperatorInspection */
+                    $content = @file_get_contents($this->filename);
+                    if ($content === false) {
+                        $err = error_get_last();
+                        throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' .
+                            $err['message']);
+                    }
+
+                    /** @noinspection PhpUsageOfSilenceOperatorInspection */
+                    $this->_settings = @unserialize($content);
+                    if ($this->_settings === false) {
+                        $err = error_get_last();
+                        throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' .
+                            $err['message']);
+                    }
+                } catch (Throwable $ex) {
+                    Yii::warning($ex->getMessage(), __METHOD__);
                     $this->_settings = [];
-                    $err = error_get_last();
-                    throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
                 }
             }
         }
@@ -58,17 +66,22 @@ class SerializeSettingsStore extends AbstractFileSettingsStore
      *
      * @param array $settings
      * @return self
-     * @throws \dicr\settings\SettingsException
      */
     protected function saveData(array $settings)
     {
         $this->_settings = $settings;
 
-        /** @noinspection PhpUsageOfSilenceOperatorInspection */
-        if (@file_put_contents($this->filename, serialize($settings)) === false) {
-            $err = error_get_last();
+        try {
             error_clear_last();
-            throw new SettingsException('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
+
+            /** @noinspection PhpUsageOfSilenceOperatorInspection */
+            if (@file_put_contents($this->filename, serialize($settings)) === false) {
+                $err = error_get_last();
+                error_clear_last();
+                throw new SettingsException('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
+            }
+        } catch (Throwable $ex) {
+            Yii::error($ex->getMessage(), __METHOD__);
         }
 
         return $this;
