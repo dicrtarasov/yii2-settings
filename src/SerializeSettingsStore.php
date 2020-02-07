@@ -9,8 +9,7 @@
 declare(strict_types = 1);
 namespace dicr\settings;
 
-use Throwable;
-use Yii;
+use function is_array;
 
 /**
  * Настройки, хранимые в файле PHP.
@@ -19,69 +18,55 @@ use Yii;
  */
 class SerializeSettingsStore extends AbstractFileSettingsStore
 {
-    /** @var array кэш настроек */
-    private $_settings;
-
     /**
      * Загружает настройки из файла
      *
      * @return array
+     * @throws \dicr\settings\SettingsException
      */
-    protected function loadData()
+    protected function loadFile()
     {
-        if (! isset($this->_settings)) {
-            $this->_settings = [];
+        $settings = [];
 
-            if (file_exists($this->filename)) {
-                try {
-                    error_clear_last();
+        if (file_exists($this->filename)) {
+            error_clear_last();
 
-                    /** @noinspection PhpUsageOfSilenceOperatorInspection */
-                    $content = @file_get_contents($this->filename);
-                    if ($content === false) {
-                        $err = error_get_last();
-                        throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' .
-                            $err['message']);
-                    }
+            /** @noinspection PhpUsageOfSilenceOperatorInspection */
+            $content = @file_get_contents($this->filename);
+            if ($content === false) {
+                $err = error_get_last();
+                throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
+            }
 
-                    /** @noinspection PhpUsageOfSilenceOperatorInspection */
-                    $this->_settings = @unserialize($content);
-                    if ($this->_settings === false) {
-                        $err = error_get_last();
-                        throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' .
-                            $err['message']);
-                    }
-                } catch (Throwable $ex) {
-                    Yii::warning($ex->getMessage(), __METHOD__);
-                    $this->_settings = [];
-                }
+            /** @noinspection PhpUsageOfSilenceOperatorInspection */
+            $settings = @unserialize($content, [
+                'allowed_classes' => true
+            ]);
+
+            if (! is_array($settings)) {
+                $err = error_get_last();
+                throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
             }
         }
 
-        return $this->_settings;
+        return $settings;
     }
 
     /**
      * Сохраняет настройки в файл
      *
      * @param array $settings
-     * @return self
+     * @return $this
+     * @throws \dicr\settings\SettingsException
      */
-    protected function saveData(array $settings)
+    protected function saveFile(array $settings)
     {
-        $this->_settings = $settings;
+        error_clear_last();
 
-        try {
-            error_clear_last();
-
-            /** @noinspection PhpUsageOfSilenceOperatorInspection */
-            if (@file_put_contents($this->filename, serialize($settings)) === false) {
-                $err = error_get_last();
-                error_clear_last();
-                throw new SettingsException('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
-            }
-        } catch (Throwable $ex) {
-            Yii::error($ex->getMessage(), __METHOD__);
+        /** @noinspection PhpUsageOfSilenceOperatorInspection */
+        if (@file_put_contents($this->filename, serialize($settings), LOCK_EX) === false) {
+            $err = error_get_last();
+            throw new SettingsException('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
         }
 
         return $this;

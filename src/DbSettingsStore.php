@@ -18,6 +18,7 @@ use yii\db\Query;
 use yii\db\Schema;
 use yii\di\Instance;
 use yii\helpers\Json;
+use function array_key_exists;
 use function in_array;
 use function is_array;
 
@@ -28,6 +29,25 @@ use function is_array;
  */
 class DbSettingsStore extends AbstractSettingsStore
 {
+    /** @var string кодирование значения в строку, объекты сохраняются toString, восстанавливаются строки */
+    public const FORMAT_STRING = 'string';
+
+    /** @var string кодирование значения в JSON, объекты хранятся как ассоциативные массивы */
+    public const FORMAT_JSON = 'json';
+
+    /** @var string кодирование значения через serialize, обьекты сохраняются/восстанавливаются целиком */
+    public const FORMAT_SERIALIZE = 'serialize';
+
+    /** @var array форматы кодирования значения */
+    public const FORMATS = [
+        self::FORMAT_STRING => 'String',
+        self::FORMAT_JSON => 'JSON',
+        self::FORMAT_SERIALIZE => 'Serialize'
+    ];
+
+    /** @var string формат кодирования поля значения */
+    public $format = self::FORMAT_JSON;
+
     /** @var \yii\db\Connection база данных */
     public $db = 'db';
 
@@ -47,6 +67,10 @@ class DbSettingsStore extends AbstractSettingsStore
         $this->tableName = trim($this->tableName);
         if (empty($this->tableName)) {
             throw new InvalidConfigException('tableName');
+        }
+
+        if (! array_key_exists($this->format, self::FORMATS)) {
+            throw new InvalidConfigException('format: ' . $this->format);
         }
 
         $this->initDatabase();
@@ -85,13 +109,31 @@ class DbSettingsStore extends AbstractSettingsStore
      */
     protected function encodeValue($value)
     {
+        $encoded = null;
+
         try {
-            return Json::encode($value);
+            switch ($this->format) {
+                case self::FORMAT_STRING:
+                    $encoded = (string)$value;
+                    break;
+
+                case self::FORMAT_JSON:
+                    $encoded = Json::encode($value);
+                    break;
+
+                case self::FORMAT_SERIALIZE:
+                    $encoded = serialize($value);
+                    break;
+
+                default:
+                    throw new InvalidConfigException('неизвестный format: ' . $this->format);
+            }
         } catch (Throwable $ex) {
             Yii::error($ex, __METHOD__);
-
-            return null;
+            $encoded = (string)$value;
         }
+
+        return $encoded;
     }
 
     /**
@@ -102,13 +144,36 @@ class DbSettingsStore extends AbstractSettingsStore
      */
     protected function decodeValue($value)
     {
-        try {
-            return Json::decode($value);
-        } catch (Throwable $ex) {
-            Yii::warning($ex, __METHOD__);
+        $decoded = null;
 
-            return null;
+        if ($value !== '' && $value !== null) {
+            try {
+                switch ($this->format) {
+                    case self::FORMAT_STRING:
+                        $decoded = $value;
+                        break;
+
+                    case self::FORMAT_JSON:
+                        $decoded = Json::decode($value);
+                        break;
+
+                    case self::FORMAT_SERIALIZE:
+                        $decoded = unserialize($value, [
+                            'allowed_classes' => true
+                        ]);
+
+                        break;
+
+                    default:
+                        throw new InvalidConfigException('неизвестный формат: ' . $this->format);
+                }
+            } catch (Throwable $ex) {
+                Yii::warning($ex, __METHOD__);
+                $decoded = $value;
+            }
         }
+
+        return $decoded;
     }
 
     /**
@@ -162,7 +227,6 @@ class DbSettingsStore extends AbstractSettingsStore
                     'name' => $key
                 ])->execute();
 
-                /** @noinspection MissedFieldInspection */
                 $this->db->createCommand()->insert($this->tableName, [
                     'module' => $module,
                     'name' => $key,

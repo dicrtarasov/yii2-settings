@@ -1,7 +1,7 @@
 {
     "name": "dicr/yii2-settings",
     "license": "MIT",
-    "description": "Компонент для сохранения настроек Yii2",
+    "description": "Компонент Yii2 для хранения настроек приложения",
     "type": "yii2-extension",
     "authors": [
         {

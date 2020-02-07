@@ -16,12 +16,16 @@ use function is_array;
 /**
  * Настройки, хранимые в файле PHP.
  *
+ * @property array[] $settings все начения всех модулей.
  * @noinspection MissingPropertyAnnotationsInspection
  */
 abstract class AbstractFileSettingsStore extends AbstractSettingsStore
 {
     /** @var string имя файла для сохранения настроек */
     public $filename;
+
+    /** @var array */
+    private $_settings = [];
 
     /**
      * {@inheritdoc}
@@ -39,21 +43,51 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * Загружает настройки из файла
+     * Загружает настройки из файла.
      *
-     * @return array
+     * @return array[]
      * @throws \dicr\settings\SettingsException
      */
-    abstract protected function loadData();
+    abstract protected function loadFile();
 
     /**
-     * Сохраняет настройки в файл
+     * Сохраняет настройки в файл.
      *
-     * @param array $settings
+     * @param array[] $settings
      * @return self
      * @throws \dicr\settings\SettingsException
      */
-    abstract protected function saveData(array $settings);
+    abstract protected function saveFile(array $settings);
+
+    /**
+     * Возвращает все значения всех модулей.
+     *
+     * @return array[]
+     * @throws \dicr\settings\SettingsException
+     */
+    public function getSettings()
+    {
+        if (!isset($this->_settings)) {
+            $this->_settings = $this->loadFile() ?: [];
+        }
+
+        return $this->_settings;
+    }
+
+    /**
+     * Установить настройки.
+     *
+     * @param array[] $settings
+     * @return $this
+     * @throws \dicr\settings\SettingsException
+     */
+    public function setSettings(array $settings)
+    {
+        $this->_settings = $settings;
+        $this->saveFile($settings);
+
+        return $this;
+    }
 
     /**
      * {@inheritdoc}
@@ -61,12 +95,13 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      */
     public function get(string $module, string $name = null, $default = null)
     {
-        $settings = $this->loadData();
+        $settings = $this->getSettings();
 
         if (isset($name)) {
             return $settings[$module][$name] ?? $default;
         }
 
+        /** @noinspection UnnecessaryCastingInspection */
         return array_merge((array)($settings[$module] ?? []), (array)($default ?: []));
     }
 
@@ -76,7 +111,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      */
     public function set(string $module, $name, $value = null)
     {
-        $settings = $this->loadData();
+        $settings = $this->getSettings();
         $changed = false;
 
         foreach (is_array($name) ? $name : [$name => $value] as $key => $val) {
@@ -90,7 +125,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
         }
 
         if ($changed) {
-            $this->saveData($settings);
+            $this->setSettings($settings);
         }
 
         return $this;
@@ -102,7 +137,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      */
     public function delete(string $module, string $name = null)
     {
-        $settings = $this->loadData();
+        $settings = $this->getSettings();
         $changed = false;
 
         if (isset($settings[$module])) {
@@ -116,7 +151,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
         }
 
         if ($changed) {
-            $this->saveData($settings);
+            $this->setSettings($settings);
         }
 
         return $this;

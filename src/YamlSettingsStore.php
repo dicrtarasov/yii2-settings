@@ -10,8 +10,7 @@
 declare(strict_types = 1);
 namespace dicr\settings;
 
-use Throwable;
-use Yii;
+use function is_array;
 use function yaml_emit_file;
 use function yaml_parse_file;
 
@@ -20,61 +19,45 @@ use function yaml_parse_file;
  */
 class YamlSettingsStore extends AbstractFileSettingsStore
 {
-    /** @var array кэш настроек */
-    private $_settings;
-
     /**
      * Загружает настройки из файла
      *
      * @return array
+     * @throws \dicr\settings\SettingsException
      */
-    protected function loadData()
+    protected function loadFile()
     {
-        if (! isset($this->_settings)) {
-            $this->_settings = [];
+        $settings = [];
 
-            if (file_exists($this->filename)) {
-                try {
-                    error_clear_last();
+        if (file_exists($this->filename)) {
+            error_clear_last();
 
-                    /** @noinspection PhpUsageOfSilenceOperatorInspection */
-                    $this->_settings = @yaml_parse_file($this->filename);
-                    if ($this->_settings === false) {
-                        $err = error_get_last();
-                        throw new SettingsException('Ошибка загрузки файла: ' . $this->filename . ': ' .
-                            $err['message']);
-                    }
-                } catch (Throwable $ex) {
-                    $this->_settings = [];
-                    Yii::warning($ex->getMessage(), __METHOD__);
-                }
+            /** @noinspection PhpUsageOfSilenceOperatorInspection */
+            $settings = @yaml_parse_file($this->filename);
+            if (! is_array($settings)) {
+                $err = error_get_last();
+                throw new SettingsException('Ошибка загрузки файла: ' . $this->filename . ': ' . $err['message']);
             }
         }
 
-        return $this->_settings;
+        return $settings;
     }
 
     /**
      * Сохраняет настройки в файл
      *
      * @param array $settings to save
-     * @return \dicr\settings\YamlSettingsStore
+     * @return $this
+     * @throws \dicr\settings\SettingsException
      */
-    protected function saveData(array $settings)
+    protected function saveFile(array $settings)
     {
-        $this->_settings = $settings;
+        error_clear_last();
 
-        try {
-            error_clear_last();
-
-            /** @noinspection PhpUsageOfSilenceOperatorInspection */
-            if (! @yaml_emit_file($this->filename, $this->_settings, YAML_UTF8_ENCODING, YAML_LN_BREAK)) {
-                $err = error_get_last();
-                error_clear_last();
-                throw new SettingsException('ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
-            }
-        } catch (Throwable $ex) {
-            Yii::error($ex->getMessage(), __METHOD__);
+        /** @noinspection PhpUsageOfSilenceOperatorInspection */
+        if (! @yaml_emit_file($this->filename, $settings, YAML_UTF8_ENCODING, YAML_LN_BREAK)) {
+            $err = error_get_last();
+            throw new SettingsException('ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
         }
 
         return $this;

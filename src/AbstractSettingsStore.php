@@ -10,8 +10,6 @@ declare(strict_types = 1);
 namespace dicr\settings;
 
 use yii\base\Component;
-use yii\base\Model;
-use function get_class;
 
 /**
  * Абстрактное хранилище настроек.
@@ -60,47 +58,4 @@ abstract class AbstractSettingsStore extends Component
      * @throws \dicr\settings\SettingsException
      */
     abstract public function delete(string $module, string $name = null);
-
-    /**
-     * Возвращает имя модуля настроек для модели.
-     *
-     * @param \yii\base\Model $model
-     * @return string класс модели
-     */
-    protected function getModuleName(Model $model)
-    {
-        return get_class($model);
-    }
-
-    /**
-     * Загружает атрибуты модели из базы.
-     *
-     * @param \yii\base\Model $model модель для загрузки аттрибутов из настроек
-     * @param bool $safeOnly только безопасные аттрибуты
-     * @return $this
-     * @throws \dicr\settings\SettingsException
-     */
-    public function loadModel(Model $model, bool $safeOnly = null)
-    {
-        $module = $this->getModuleName($model);
-        $values = $this->get($module);
-        $model->setAttributes($values, $safeOnly ?? false);
-
-        return $this;
-    }
-
-    /**
-     * Сохраняет аттрибуты модели в настройах.
-     *
-     * @param \yii\base\Model $model модель для сохранения аттрибутов в настройки.
-     * @return $this
-     * @throws \dicr\settings\SettingsException
-     */
-    public function saveModel(Model $model)
-    {
-        $module = $this->getModuleName($model);
-        $this->set($module, $model->getAttributes());
-
-        return $this;
-    }
 }
