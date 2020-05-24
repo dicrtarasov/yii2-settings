@@ -18,14 +18,20 @@
     },
     "autoload": {
         "psr-4": {
-            "dicr\\settings\\": "src"
+            "dicr\\settings\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "dicr\\tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",
+    "prefer-stable": true,
     "require": {
         "php": ">=7.2",
-        "yiisoft/yii2": "~2.0.32",
-        "dicr/yii2-helper": "~2.1.9"
+        "yiisoft/yii2": "~2.0.35",
+        "dicr/yii2-helper": "~2.2.1"
     },
     "suggest": {
         "ext-yaml": "Needed form YML settings store"
@@ -37,13 +43,7 @@
         "ext-yaml": "*"
     },
     "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }, {
-            "type": "git",
-            "url": "https://gitlab.com/dicr/yii2-helper.git",
-            "name": "yii2-helper"
-        }
+        {"type": "git", "url": "https://gitlab.com/dicr/yii2-helper.git"},
+        {"type": "composer", "url": "https://asset-packagist.org"}
     ]
 }

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 03:13:24
+ * @version 24.05.20 14:04:36
  */
 
 declare(strict_types = 1);
@@ -16,7 +16,7 @@ use yii\base\Model;
 /**
  * Абстрактная модель настроек.
  *
- * Используетс как синглетон через Model::instance()
+ * Используется как singleton через Model::instance()
  */
 abstract class AbstractSettingsModel extends Model
 {

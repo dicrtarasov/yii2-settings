@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 03:37:41
+ * @version 24.05.20 14:05:13
  */
 
 declare(strict_types = 1);
@@ -36,7 +36,7 @@ abstract class AbstractTestCase extends TestCase
      * @return \yii\console\Application
      * @throws \yii\base\InvalidConfigException
      */
-    public function setUp()
+    protected function setUp()
     {
         $this->deleteFiles();
 
@@ -58,7 +58,7 @@ abstract class AbstractTestCase extends TestCase
      *
      * @noinspection DisallowWritingIntoStaticPropertiesInspection
      */
-    public function tearDown()
+    protected function tearDown()
     {
         Yii::$app = null;
         Yii::$container = new Container();
@@ -78,7 +78,7 @@ abstract class AbstractTestCase extends TestCase
         $testModel = TestModel::instance(true);
         self::assertNull($testModel->float);
 
-        // проверка singleton экремпляра
+        // проверка singleton экземпляра
         self::assertEquals($testModel, TestModel::instance());
 
         // загружаем в модель данные

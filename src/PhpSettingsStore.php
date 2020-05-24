@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 07:06:03
+ * @version 24.05.20 14:06:22
  */
 
 declare(strict_types = 1);
@@ -50,8 +50,9 @@ class PhpSettingsStore extends AbstractFileSettingsStore
     {
         error_clear_last();
 
-        /** @noinspection PhpUsageOfSilenceOperatorInspection */
         $content = '<?php return ' . var_export($settings, true) . ';';
+
+        /** @noinspection PhpUsageOfSilenceOperatorInspection */
         if (@file_put_contents($this->filename, $content, LOCK_EX) === false) {
             $err = error_get_last();
             throw new SettingsException('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);

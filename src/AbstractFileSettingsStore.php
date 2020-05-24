@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 03:33:38
+ * @version 24.05.20 14:04:36
  */
 
 declare(strict_types = 1);
@@ -16,7 +16,7 @@ use function is_array;
 /**
  * Настройки, хранимые в файле PHP.
  *
- * @property array[] $settings все начения всех модулей.
+ * @property array[] $settings все значения всех модулей.
  * @noinspection MissingPropertyAnnotationsInspection
  */
 abstract class AbstractFileSettingsStore extends AbstractSettingsStore

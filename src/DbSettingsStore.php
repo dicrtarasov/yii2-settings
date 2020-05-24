@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 03:34:41
+ * @version 24.05.20 14:05:38
  */
 
 declare(strict_types = 1);
@@ -35,7 +35,7 @@ class DbSettingsStore extends AbstractSettingsStore
     /** @var string кодирование значения в JSON, объекты хранятся как ассоциативные массивы */
     public const FORMAT_JSON = 'json';
 
-    /** @var string кодирование значения через serialize, обьекты сохраняются/восстанавливаются целиком */
+    /** @var string кодирование значения через serialize, объекты сохраняются/восстанавливаются целиком */
     public const FORMAT_SERIALIZE = 'serialize';
 
     /** @var array форматы кодирования значения */
@@ -77,7 +77,7 @@ class DbSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * Инициализарует базу данных (создает таблицу).
+     * Инициализирует базу данных (создает таблицу).
      *
      * @throws \yii\base\NotSupportedException
      * @throws \yii\db\Exception
