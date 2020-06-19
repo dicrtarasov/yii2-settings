@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 24.05.20 14:05:38
+ * @version 19.06.20 08:02:04
  */
 
 declare(strict_types = 1);
@@ -55,7 +55,7 @@ class DbSettingsStore extends AbstractSettingsStore
     public $tableName = '{{settings}}';
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\base\NotSupportedException
      * @throws \yii\db\Exception
@@ -177,8 +177,7 @@ class DbSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * {@inheritdoc}
-     * @see \dicr\settings\AbstractSettingsStore::get()
+     * @inheritdoc
      */
     public function get(string $module, string $name = null, $default = null)
     {
@@ -211,9 +210,8 @@ class DbSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      * @throws \yii\db\Exception
-     * @see \dicr\settings\AbstractSettingsStore::set()
      */
     public function set(string $module, $name, $value = null)
     {
@@ -239,9 +237,8 @@ class DbSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      * @throws \yii\db\Exception
-     * @see \dicr\settings\AbstractSettingsStore::delete()
      */
     public function delete(string $module, string $name = null)
     {

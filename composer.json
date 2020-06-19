@@ -3,6 +3,8 @@
     "license": "MIT",
     "description": "Компонент Yii2 для хранения настроек приложения",
     "type": "yii2-extension",
+    "keywords": ["dicr", "php", "yii2", "settings"],
+    "homepage": "https://gitlab.com/dicr/yii2-settings",
     "authors": [
         {
             "name": "Igor Tarasov",
@@ -11,8 +13,6 @@
             "role": "developer"
         }
     ],
-    "keywords": ["dicr", "php", "yii2", "settings"],
-    "homepage": "https://gitlab.com/dicr/yii2-settings",
     "support": {
         "source": "https://gitlab.com/dicr/yii2-settings.git"
     },
@@ -31,7 +31,7 @@
     "require": {
         "php": ">=7.2",
         "yiisoft/yii2": "~2.0.35",
-        "dicr/yii2-helper": "~2.2.1"
+        "dicr/yii2-helper": "~2.3.0"
     },
     "suggest": {
         "ext-yaml": "Needed form YML settings store"

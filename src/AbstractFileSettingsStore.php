@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 24.05.20 14:04:36
+ * @version 19.06.20 08:00:58
  */
 
 declare(strict_types = 1);
@@ -28,9 +28,8 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
     private $_settings = [];
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      * @throws \yii\base\InvalidConfigException
-     * @see \yii\base\BaseObject::init()
      */
     public function init()
     {
@@ -90,8 +89,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * {@inheritdoc}
-     * @see \dicr\settings\AbstractSettingsStore::get()
+     * @inheritdoc
      */
     public function get(string $module, string $name = null, $default = null)
     {
@@ -106,8 +104,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * {@inheritdoc}
-     * @see \dicr\settings\AbstractSettingsStore::set()
+     * @inheritdoc
      */
     public function set(string $module, $name, $value = null)
     {
@@ -132,8 +129,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * {@inheritdoc}
-     * @see \dicr\settings\AbstractSettingsStore::delete()
+     * @inheritdoc
      */
     public function delete(string $module, string $name = null)
     {
