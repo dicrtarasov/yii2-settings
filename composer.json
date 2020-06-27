@@ -5,6 +5,9 @@
     "type": "yii2-extension",
     "keywords": ["dicr", "php", "yii2", "settings"],
     "homepage": "https://gitlab.com/dicr/yii2-settings",
+    "support": {
+        "source": "https://gitlab.com/dicr/yii2-settings.git"
+    },
     "authors": [
         {
             "name": "Igor Tarasov",
@@ -13,9 +16,6 @@
             "role": "developer"
         }
     ],
-    "support": {
-        "source": "https://gitlab.com/dicr/yii2-settings.git"
-    },
     "autoload": {
         "psr-4": {
             "dicr\\settings\\": "src/"
@@ -31,7 +31,7 @@
     "require": {
         "php": ">=7.2",
         "yiisoft/yii2": "~2.0.35",
-        "dicr/yii2-helper": "~2.3.0"
+        "dicr/yii2-helper": "~2.4.0"
     },
     "suggest": {
         "ext-yaml": "Needed form YML settings store"

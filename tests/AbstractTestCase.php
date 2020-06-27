@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 24.05.20 14:05:13
+ * @version 27.06.20 20:44:01
  */
 
 declare(strict_types = 1);
@@ -31,9 +31,7 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * Create Yii application
-     *
-     * @return \yii\console\Application
+     * @inheritDoc
      * @throws \yii\base\InvalidConfigException
      */
     protected function setUp()
