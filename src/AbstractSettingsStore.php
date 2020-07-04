@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 24.05.20 14:05:13
+ * @version 04.07.20 20:59:49
  */
 
 declare(strict_types = 1);
@@ -30,7 +30,7 @@ abstract class AbstractSettingsStore extends Component
      *  Если name задано, то значение настройки, иначе ассоциативный массив значений по-умолчанию.
      *
      * @return mixed если name задан то значение настройки, иначе ассоциативный массив всех настроек модуля
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      *
      */
     abstract public function get(string $module, string $name = null, $default = null);
@@ -43,7 +43,7 @@ abstract class AbstractSettingsStore extends Component
      * @param string|array $name название параметра или ассоциативный массив параметр => значение
      * @param mixed $value значение если name как скаляр
      * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      */
     abstract public function set(string $module, $name, $value = null);
 
@@ -55,7 +55,7 @@ abstract class AbstractSettingsStore extends Component
      * @param string|null $name название настройки.
      *        Если не задано, то удаляются все настройки модуля.
      * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      */
     abstract public function delete(string $module, string $name = null);
 }

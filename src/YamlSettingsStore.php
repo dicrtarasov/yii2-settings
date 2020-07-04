@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 07:04:36
+ * @version 04.07.20 20:59:49
  */
 
 /** @noinspection PhpComposerExtensionStubsInspection */
@@ -23,7 +23,7 @@ class YamlSettingsStore extends AbstractFileSettingsStore
      * Загружает настройки из файла
      *
      * @return array
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      */
     protected function loadFile()
     {
@@ -48,7 +48,7 @@ class YamlSettingsStore extends AbstractFileSettingsStore
      *
      * @param array $settings to save
      * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      */
     protected function saveFile(array $settings)
     {

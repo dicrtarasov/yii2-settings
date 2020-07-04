@@ -3,13 +3,15 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 24.05.20 14:03:30
+ * @version 04.07.20 21:00:28
  */
 
 declare(strict_types = 1);
 namespace dicr\tests;
 
 use dicr\settings\PhpSettingsStore;
+use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * Test PhpSettingsStore
@@ -19,12 +21,17 @@ class PhpSettingsTest extends AbstractTestCase
     /**
      * @inheritDoc
      *
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function setUp()
+    public static function setUpBeforeClass(): void
     {
-        parent::setUp()->set('settings', new PhpSettingsStore([
-            'filename' => $this->filename
-        ]));
+        parent::setUpBeforeClass();
+
+        Yii::$app->setComponents([
+            'settings' => [
+                'class' => PhpSettingsStore::class,
+                'filename' => self::FILENAME
+            ]
+        ]);
     }
 }

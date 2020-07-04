@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 19.06.20 08:02:04
+ * @version 04.07.20 20:59:50
  */
 
 declare(strict_types = 1);
@@ -13,7 +13,9 @@ use dicr\helper\ArrayHelper;
 use Throwable;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\base\NotSupportedException;
 use yii\db\Connection;
+use yii\db\Exception;
 use yii\db\Query;
 use yii\db\Schema;
 use yii\di\Instance;
@@ -48,7 +50,7 @@ class DbSettingsStore extends AbstractSettingsStore
     /** @var string формат кодирования поля значения */
     public $format = self::FORMAT_JSON;
 
-    /** @var \yii\db\Connection база данных */
+    /** @var Connection база данных */
     public $db = 'db';
 
     /** @var string имя таблицы в базе данных */
@@ -56,9 +58,9 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * @inheritdoc
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\base\NotSupportedException
-     * @throws \yii\db\Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Exception
      */
     public function init()
     {
@@ -79,8 +81,8 @@ class DbSettingsStore extends AbstractSettingsStore
     /**
      * Инициализирует базу данных (создает таблицу).
      *
-     * @throws \yii\base\NotSupportedException
-     * @throws \yii\db\Exception
+     * @throws NotSupportedException
+     * @throws Exception
      */
     protected function initDatabase()
     {
@@ -211,7 +213,7 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * @inheritdoc
-     * @throws \yii\db\Exception
+     * @throws Exception
      */
     public function set(string $module, $name, $value = null)
     {
@@ -238,7 +240,7 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * @inheritdoc
-     * @throws \yii\db\Exception
+     * @throws Exception
      */
     public function delete(string $module, string $name = null)
     {

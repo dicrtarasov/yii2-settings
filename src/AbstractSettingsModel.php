@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 19.06.20 08:01:44
+ * @version 04.07.20 20:59:50
  */
 
 declare(strict_types = 1);
@@ -11,6 +11,7 @@ declare(strict_types = 1);
 namespace dicr\settings;
 
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\base\Model;
 
 /**
@@ -22,8 +23,8 @@ abstract class AbstractSettingsModel extends Model
 {
     /**
      * @inheritDoc
-     * @throws \dicr\settings\SettingsException
-     * @throws \yii\base\InvalidConfigException
+     * @throws SettingsException
+     * @throws InvalidConfigException
      */
     public function init()
     {
@@ -37,8 +38,8 @@ abstract class AbstractSettingsModel extends Model
      * Возвращает хранилище настроек.
      * Для переопределения в дочерних реализациях.
      *
-     * @return \dicr\settings\AbstractSettingsStore
-     * @throws \yii\base\InvalidConfigException
+     * @return AbstractSettingsStore
+     * @throws InvalidConfigException
      * @noinspection PhpIncompatibleReturnTypeInspection
      */
     public static function store()
@@ -61,8 +62,8 @@ abstract class AbstractSettingsModel extends Model
      *
      * @param bool $safeOnly только безопасные атрибуты
      * @return $this
-     * @throws \dicr\settings\SettingsException
-     * @throws \yii\base\InvalidConfigException
+     * @throws SettingsException
+     * @throws InvalidConfigException
      */
     public function loadSettings(bool $safeOnly = true)
     {
@@ -79,8 +80,8 @@ abstract class AbstractSettingsModel extends Model
      *
      * @param bool $validate выполнить валидацию
      * @return bool при ошибке валидации возвращает false
-     * @throws \dicr\settings\SettingsException
-     * @throws \yii\base\InvalidConfigException
+     * @throws SettingsException
+     * @throws InvalidConfigException
      */
     public function save(bool $validate = true)
     {

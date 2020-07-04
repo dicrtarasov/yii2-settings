@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 19.06.20 08:00:58
+ * @version 04.07.20 20:59:50
  */
 
 declare(strict_types = 1);
@@ -29,7 +29,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
 
     /**
      * @inheritdoc
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function init()
     {
@@ -45,7 +45,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      * Загружает настройки из файла.
      *
      * @return array[]
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      */
     abstract protected function loadFile();
 
@@ -54,7 +54,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      *
      * @param array[] $settings
      * @return self
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      */
     abstract protected function saveFile(array $settings);
 
@@ -62,7 +62,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      * Возвращает все значения всех модулей.
      *
      * @return array[]
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      */
     public function getSettings()
     {
@@ -78,7 +78,7 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      *
      * @param array[] $settings
      * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @throws SettingsException
      */
     public function setSettings(array $settings)
     {

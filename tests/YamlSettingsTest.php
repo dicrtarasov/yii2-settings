@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 24.05.20 14:03:30
+ * @version 04.07.20 20:59:50
  */
 
 declare(strict_types = 1);
@@ -11,23 +11,28 @@ declare(strict_types = 1);
 namespace dicr\tests;
 
 use dicr\settings\YamlSettingsStore;
+use Yii;
+use yii\base\InvalidConfigException;
+use yii\console\Application;
 
 /**
  * Test PhpSettingsStore
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 2019
  */
 class YamlSettingsTest extends AbstractTestCase
 {
     /**
-     * @return void|\yii\console\Application
-     * @throws \yii\base\InvalidConfigException
+     * @return void|Application
+     * @throws InvalidConfigException
      */
-    protected function setUp()
+    public static function setUpBeforeClass(): void
     {
-        parent::setUp()->set('settings', new YamlSettingsStore([
-            'filename' => $this->filename
-        ]));
+        parent::setUpBeforeClass();
+
+        Yii::$app->setComponents([
+            'settings' => [
+                'class' => YamlSettingsStore::class,
+                'filename' => self::FILENAME
+            ]
+        ]);
     }
 }

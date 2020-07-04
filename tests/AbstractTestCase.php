@@ -3,42 +3,37 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.06.20 20:44:01
+ * @version 04.07.20 21:00:28
  */
 
 declare(strict_types = 1);
 namespace dicr\tests;
 
+use dicr\settings\SettingsException;
 use PHPUnit\Framework\TestCase;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\console\Application;
 use yii\db\Connection;
 use yii\di\Container;
 use function dirname;
+use function unlink;
 
 /**
  * Базовый класс для всех тестов
  */
 abstract class AbstractTestCase extends TestCase
 {
-    /** @var string файл тестоа */
-    protected $filename = __DIR__ . '/test.dat';
-
-    protected function deleteFiles()
-    {
-        /** @noinspection PhpUsageOfSilenceOperatorInspection */
-        @unlink($this->filename);
-    }
+    /** @var string файл для хранения данных тестоа */
+    protected const FILENAME = __DIR__ . '/test.dat';
 
     /**
      * @inheritDoc
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function setUp()
+    public static function setUpBeforeClass(): void
     {
-        $this->deleteFiles();
-
-        return new Application([
+        new Application([
             'id' => 'testapp',
             'basePath' => __DIR__,
             'vendorPath' => dirname(__DIR__) . '/vendor',
@@ -56,19 +51,20 @@ abstract class AbstractTestCase extends TestCase
      *
      * @noinspection DisallowWritingIntoStaticPropertiesInspection
      */
-    protected function tearDown()
+    public static function tearDownAfterClass(): void
     {
         Yii::$app = null;
         Yii::$container = new Container();
 
-        $this->deleteFiles();
+        /** @noinspection PhpUsageOfSilenceOperatorInspection */
+        @unlink(self::FILENAME);
     }
 
     /**
      * Тест модели
      *
-     * @throws \dicr\settings\SettingsException
-     * @throws \yii\base\InvalidConfigException
+     * @throws SettingsException
+     * @throws InvalidConfigException
      */
     public function testModel()
     {
