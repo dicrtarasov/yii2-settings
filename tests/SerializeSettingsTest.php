@@ -11,6 +11,8 @@ declare(strict_types = 1);
 namespace dicr\tests;
 
 use dicr\settings\SerializeSettingsStore;
+use Yii;
+use yii\base\Exception;
 
 /**
  * Test SerializeSettingsStore
@@ -19,13 +21,14 @@ class SerializeSettingsTest extends AbstractTestCase
 {
     /**
      * @inheritDoc
-     * @return void|\yii\console\Application
-     * @throws \yii\base\InvalidConfigException
+     * @throws Exception
      */
-    public function setUp()
+    public static function setUpBeforeClass() : void
     {
-        parent::setUp()->set('settings', new SerializeSettingsStore([
-            'filename' => $this->filename
+        parent::setUpBeforeClass();
+
+        Yii::$app->set('settings', new SerializeSettingsStore([
+            'filename' => self::$filename
         ]));
     }
 }

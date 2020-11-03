@@ -10,11 +10,7 @@ declare(strict_types = 1);
 namespace dicr\tests;
 
 use PHPUnit\Framework\TestCase;
-use Yii;
-use yii\console\Application;
-use yii\db\Connection;
-use yii\di\Container;
-use function dirname;
+use yii\base\Exception;
 
 /**
  * Базовый класс для всех тестов
@@ -22,64 +18,46 @@ use function dirname;
 abstract class AbstractTestCase extends TestCase
 {
     /** @var string файл тестоа */
-    protected $filename = __DIR__ . '/test.dat';
+    protected static $filename = __DIR__ . '/test.dat';
 
-    protected function deleteFiles()
+    /**
+     * Удаляет файлы данных
+     */
+    protected static function deleteFiles() : void
     {
         /** @noinspection PhpUsageOfSilenceOperatorInspection */
-        @unlink($this->filename);
+        @unlink(self::$filename);
     }
 
     /**
-     * Create Yii application
-     *
-     * @return \yii\console\Application
-     * @throws \yii\base\InvalidConfigException
+     * @inheritDoc
      */
-    public function setUp()
+    public static function setUpBeforeClass() : void
     {
-        $this->deleteFiles();
-
-        return new Application([
-            'id' => 'testapp',
-            'basePath' => __DIR__,
-            'vendorPath' => dirname(__DIR__) . '/vendor',
-            'components' => [
-                'db' => [
-                    'class' => Connection::class,
-                    'dsn' => 'sqlite::memory:',
-                ],
-            ],
-        ]);
+        static::deleteFiles();
     }
 
     /**
-     * Destroys application in Yii::$app by setting it to null.
-     *
-     * @noinspection DisallowWritingIntoStaticPropertiesInspection
+     * @inheritDoc
      */
-    public function tearDown()
+    public static function tearDownAfterClass() : void
     {
-        Yii::$app = null;
-        Yii::$container = new Container();
-
-        $this->deleteFiles();
+        static::deleteFiles();
     }
 
     /**
      * Тест модели
      *
-     * @throws \dicr\settings\SettingsException
-     * @throws \yii\base\InvalidConfigException
+     * @throws Exception
      */
-    public function testModel()
+    public function testModel() : void
     {
         // создаем новую модель
         $testModel = TestModel::instance(true);
         self::assertNull($testModel->float);
 
-        // проверка singleton экремпляра
-        self::assertEquals($testModel, TestModel::instance());
+        // проверка singleton экземпляра
+        self::assertSame($testModel, TestModel::instance());
 
         // загружаем в модель данные
         $testModel->setAttributes(TestModel::TEST_DATA);

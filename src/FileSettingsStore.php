@@ -10,16 +10,19 @@ declare(strict_types = 1);
 namespace dicr\settings;
 
 use Yii;
+use yii\base\Component;
+use yii\base\Exception;
 use yii\base\InvalidConfigException;
+
 use function is_array;
 
 /**
  * Настройки, хранимые в файле PHP.
  *
- * @property array[] $settings все начения всех модулей.
+ * @property array[] $settings все значения всех модулей.
  * @noinspection MissingPropertyAnnotationsInspection
  */
-abstract class AbstractFileSettingsStore extends AbstractSettingsStore
+abstract class FileSettingsStore extends Component implements SettingsStore
 {
     /** @var string имя файла для сохранения настроек */
     public $filename;
@@ -29,10 +32,9 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
-     * @throws \yii\base\InvalidConfigException
-     * @see \yii\base\BaseObject::init()
+     * @throws InvalidConfigException
      */
-    public function init()
+    public function init() : void
     {
         parent::init();
 
@@ -46,28 +48,28 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      * Загружает настройки из файла.
      *
      * @return array[]
-     * @throws \dicr\settings\SettingsException
+     * @throws Exception
      */
-    abstract protected function loadFile();
+    abstract protected function loadFile() : array;
 
     /**
      * Сохраняет настройки в файл.
      *
      * @param array[] $settings
-     * @return self
-     * @throws \dicr\settings\SettingsException
+     * @return $this
+     * @throws Exception
      */
-    abstract protected function saveFile(array $settings);
+    abstract protected function saveFile(array $settings) : self;
 
     /**
      * Возвращает все значения всех модулей.
      *
      * @return array[]
-     * @throws \dicr\settings\SettingsException
+     * @throws Exception
      */
-    public function getSettings()
+    public function getSettings() : array
     {
-        if (!isset($this->_settings)) {
+        if (! isset($this->_settings)) {
             $this->_settings = $this->loadFile() ?: [];
         }
 
@@ -79,9 +81,9 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
      *
      * @param array[] $settings
      * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @throws Exception
      */
-    public function setSettings(array $settings)
+    public function setSettings(array $settings) : self
     {
         $this->_settings = $settings;
         $this->saveFile($settings);
@@ -90,8 +92,8 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
     }
 
     /**
-     * {@inheritdoc}
-     * @see \dicr\settings\AbstractSettingsStore::get()
+     * @inheritdoc
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function get(string $module, string $name = null, $default = null)
     {
@@ -107,9 +109,8 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
-     * @see \dicr\settings\AbstractSettingsStore::set()
      */
-    public function set(string $module, $name, $value = null)
+    public function set(string $module, $name, $value = null) : SettingsStore
     {
         $settings = $this->getSettings();
         $changed = false;
@@ -133,9 +134,8 @@ abstract class AbstractFileSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
-     * @see \dicr\settings\AbstractSettingsStore::delete()
      */
-    public function delete(string $module, string $name = null)
+    public function delete(string $module, string $name = null) : SettingsStore
     {
         $settings = $this->getSettings();
         $changed = false;

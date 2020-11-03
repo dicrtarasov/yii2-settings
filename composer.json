@@ -1,8 +1,10 @@
 {
     "name": "dicr/yii2-settings",
+    "type": "yii2-extension",
     "license": "MIT",
     "description": "Компонент Yii2 для хранения настроек приложения",
-    "type": "yii2-extension",
+    "keywords": ["dicr", "yii2", "settings"],
+    "homepage": "https://gitlab.com/dicr/yii2-settings",
     "authors": [
         {
             "name": "Igor Tarasov",
@@ -11,39 +13,34 @@
             "role": "developer"
         }
     ],
-    "keywords": ["dicr", "php", "yii2", "settings"],
-    "homepage": "https://gitlab.com/dicr/yii2-settings",
     "support": {
         "source": "https://gitlab.com/dicr/yii2-settings.git"
     },
     "autoload": {
         "psr-4": {
-            "dicr\\settings\\": "src"
+            "dicr\\settings\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "dicr\\tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",
     "require": {
-        "php": ">=7.2",
-        "yiisoft/yii2": "~2.0.32",
-        "dicr/yii2-helper": "~2.1.9"
+        "php": "~7.3",
+        "yiisoft/yii2": "~2.0"
     },
     "suggest": {
         "ext-yaml": "Needed form YML settings store"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-master",
-        "phpunit/phpunit": "~7.5.20",
         "ext-sqlite3": "*",
-        "ext-yaml": "*"
+        "ext-yaml": "*",
+        "roave/security-advisories": "dev-master",
+        "phpunit/phpunit": "~9.4"
     },
     "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }, {
-            "type": "git",
-            "url": "https://gitlab.com/dicr/yii2-helper.git",
-            "name": "yii2-helper"
-        }
+        {"type": "composer", "url": "https://asset-packagist.org"}
     ]
 }

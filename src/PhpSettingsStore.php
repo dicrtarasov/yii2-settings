@@ -9,20 +9,19 @@
 declare(strict_types = 1);
 namespace dicr\settings;
 
+use yii\base\Exception;
+
 use function is_array;
 
 /**
  * Настройки, хранимые в файле PHP.
  */
-class PhpSettingsStore extends AbstractFileSettingsStore
+class PhpSettingsStore extends FileSettingsStore
 {
     /**
-     * Загружает настройки из файла
-     *
-     * @return array
-     * @throws \dicr\settings\SettingsException
+     * @inheritDoc
      */
-    protected function loadFile()
+    protected function loadFile() : array
     {
         $settings = [];
 
@@ -32,7 +31,7 @@ class PhpSettingsStore extends AbstractFileSettingsStore
             $settings = @include($this->filename);
             if (! is_array($settings)) {
                 $err = error_get_last();
-                throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
+                throw new Exception('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
             }
         }
 
@@ -40,21 +39,18 @@ class PhpSettingsStore extends AbstractFileSettingsStore
     }
 
     /**
-     * Сохраняет настройки в файл
-     *
-     * @param array $settings
-     * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @inheritDoc
      */
-    protected function saveFile(array $settings)
+    protected function saveFile(array $settings) : FileSettingsStore
     {
         error_clear_last();
 
-        /** @noinspection PhpUsageOfSilenceOperatorInspection */
         $content = '<?php return ' . var_export($settings, true) . ';';
+
+        /** @noinspection PhpUsageOfSilenceOperatorInspection */
         if (@file_put_contents($this->filename, $content, LOCK_EX) === false) {
             $err = error_get_last();
-            throw new SettingsException('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
+            throw new Exception('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
         }
 
         return $this;

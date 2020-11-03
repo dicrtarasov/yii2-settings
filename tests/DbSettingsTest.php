@@ -10,6 +10,8 @@ declare(strict_types = 1);
 namespace dicr\tests;
 
 use dicr\settings\DbSettingsStore;
+use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * Test PhpSettingsStore
@@ -19,10 +21,12 @@ class DbSettingsTest extends AbstractTestCase
     /**
      * @inheritDoc
      *
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    public function setUp()
+    public static function setUpBeforeClass() : void
     {
-        parent::setUp()->set('settings', new DbSettingsStore());
+        parent::setUpBeforeClass();
+
+        Yii::$app->set('settings', new DbSettingsStore());
     }
 }

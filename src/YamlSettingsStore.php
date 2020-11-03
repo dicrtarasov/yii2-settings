@@ -10,6 +10,8 @@
 declare(strict_types = 1);
 namespace dicr\settings;
 
+use yii\base\Exception;
+
 use function is_array;
 use function yaml_emit_file;
 use function yaml_parse_file;
@@ -17,15 +19,12 @@ use function yaml_parse_file;
 /**
  * Настройки в Yaml-файле.
  */
-class YamlSettingsStore extends AbstractFileSettingsStore
+class YamlSettingsStore extends FileSettingsStore
 {
     /**
-     * Загружает настройки из файла
-     *
-     * @return array
-     * @throws \dicr\settings\SettingsException
+     * @inheritDoc
      */
-    protected function loadFile()
+    protected function loadFile() : array
     {
         $settings = [];
 
@@ -36,7 +35,7 @@ class YamlSettingsStore extends AbstractFileSettingsStore
             $settings = @yaml_parse_file($this->filename);
             if (! is_array($settings)) {
                 $err = error_get_last();
-                throw new SettingsException('Ошибка загрузки файла: ' . $this->filename . ': ' . $err['message']);
+                throw new Exception('Ошибка загрузки файла: ' . $this->filename . ': ' . $err['message']);
             }
         }
 
@@ -44,20 +43,16 @@ class YamlSettingsStore extends AbstractFileSettingsStore
     }
 
     /**
-     * Сохраняет настройки в файл
-     *
-     * @param array $settings to save
-     * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @inheritDoc
      */
-    protected function saveFile(array $settings)
+    protected function saveFile(array $settings) : FileSettingsStore
     {
         error_clear_last();
 
         /** @noinspection PhpUsageOfSilenceOperatorInspection */
         if (! @yaml_emit_file($this->filename, $settings, YAML_UTF8_ENCODING, YAML_LN_BREAK)) {
             $err = error_get_last();
-            throw new SettingsException('ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
+            throw new Exception('ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
         }
 
         return $this;

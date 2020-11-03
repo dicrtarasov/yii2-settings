@@ -9,15 +9,19 @@
 declare(strict_types = 1);
 namespace dicr\settings;
 
-use dicr\helper\ArrayHelper;
 use Throwable;
 use Yii;
+use yii\base\Component;
+use yii\base\Exception;
 use yii\base\InvalidConfigException;
+use yii\base\NotSupportedException;
 use yii\db\Connection;
 use yii\db\Query;
 use yii\db\Schema;
 use yii\di\Instance;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+
 use function array_key_exists;
 use function in_array;
 use function is_array;
@@ -27,7 +31,7 @@ use function is_array;
  *
  * @noinspection MissingPropertyAnnotationsInspection
  */
-class DbSettingsStore extends AbstractSettingsStore
+class DbSettingsStore extends Component implements SettingsStore
 {
     /** @var string кодирование значения в строку, объекты сохраняются toString, восстанавливаются строки */
     public const FORMAT_STRING = 'string';
@@ -35,7 +39,7 @@ class DbSettingsStore extends AbstractSettingsStore
     /** @var string кодирование значения в JSON, объекты хранятся как ассоциативные массивы */
     public const FORMAT_JSON = 'json';
 
-    /** @var string кодирование значения через serialize, обьекты сохраняются/восстанавливаются целиком */
+    /** @var string кодирование значения через serialize, объекты сохраняются/восстанавливаются целиком */
     public const FORMAT_SERIALIZE = 'serialize';
 
     /** @var array форматы кодирования значения */
@@ -48,7 +52,7 @@ class DbSettingsStore extends AbstractSettingsStore
     /** @var string формат кодирования поля значения */
     public $format = self::FORMAT_JSON;
 
-    /** @var \yii\db\Connection база данных */
+    /** @var Connection база данных */
     public $db = 'db';
 
     /** @var string имя таблицы в базе данных */
@@ -56,33 +60,30 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\base\NotSupportedException
-     * @throws \yii\db\Exception
+     * @throws Exception
      */
-    public function init()
+    public function init() : void
     {
         $this->db = Instance::ensure($this->db, Connection::class);
 
-        $this->tableName = trim($this->tableName);
         if (empty($this->tableName)) {
             throw new InvalidConfigException('tableName');
         }
 
         if (! array_key_exists($this->format, self::FORMATS)) {
-            throw new InvalidConfigException('format: ' . $this->format);
+            throw new InvalidConfigException('format');
         }
 
         $this->initDatabase();
     }
 
     /**
-     * Инициализарует базу данных (создает таблицу).
+     * Инициализирует базу данных (создает таблицу).
      *
-     * @throws \yii\base\NotSupportedException
-     * @throws \yii\db\Exception
+     * @throws NotSupportedException
+     * @throws Exception
      */
-    protected function initDatabase()
+    protected function initDatabase() : void
     {
         $schema = $this->db->getSchema();
 
@@ -107,7 +108,7 @@ class DbSettingsStore extends AbstractSettingsStore
      * @param mixed $value значение
      * @return string строковое значение
      */
-    protected function encodeValue($value)
+    protected function encodeValue($value) : string
     {
         $encoded = null;
 
@@ -139,10 +140,11 @@ class DbSettingsStore extends AbstractSettingsStore
     /**
      * Декодирует значение из базы
      *
-     * @param string|null $value
+     * @param ?string $value
      * @return mixed
+     * @noinspection PhpMissingReturnTypeInspection
      */
-    protected function decodeValue($value)
+    protected function decodeValue(?string $value)
     {
         $decoded = null;
 
@@ -178,7 +180,7 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
-     * @see \dicr\settings\AbstractSettingsStore::get()
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function get(string $module, string $name = null, $default = null)
     {
@@ -199,7 +201,8 @@ class DbSettingsStore extends AbstractSettingsStore
         $query->addSelect('name')
             ->indexBy('name');
 
-        $values = array_map(function(string $val) {
+
+        $values = array_map(function (string $val) {
             return $this->decodeValue($val);
         }, $query->column($this->db));
 
@@ -212,10 +215,8 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
-     * @throws \yii\db\Exception
-     * @see \dicr\settings\AbstractSettingsStore::set()
      */
-    public function set(string $module, $name, $value = null)
+    public function set(string $module, $name, $value = null) : SettingsStore
     {
         foreach (is_array($name) ? $name : [$name => $value] as $key => $val) {
             if ($val === null || $val === '') {
@@ -240,10 +241,8 @@ class DbSettingsStore extends AbstractSettingsStore
 
     /**
      * {@inheritdoc}
-     * @throws \yii\db\Exception
-     * @see \dicr\settings\AbstractSettingsStore::delete()
      */
-    public function delete(string $module, string $name = null)
+    public function delete(string $module, string $name = null) : SettingsStore
     {
         $conds = ['module' => $module];
 

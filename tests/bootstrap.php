@@ -7,15 +7,40 @@
  */
 
 declare(strict_types = 1);
-error_reporting(- 1);
+
+error_reporting(-1);
 ini_set('display_errors', '1');
 
-define('YII_ENABLE_ERROR_HANDLER', false);
+/**  */
+define('YII_ENV', 'dev');
+
+/**  */
 define('YII_DEBUG', true);
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 require_once(__DIR__ . '/../vendor/yiisoft/yii2/Yii.php');
 
-Yii::setAlias('@dicr/tests', __DIR__);
-Yii::setAlias('@dicr/settings', dirname(__DIR__) . '/src');
+/** @noinspection PhpUnhandledExceptionInspection */
+new yii\console\Application([
+    'id' => 'testapp',
+    'basePath' => dirname(__DIR__),
+    'components' => [
+        'cache' => [
+            'class' => yii\caching\FileCache::class
+        ],
+        'log' => [
+            'targets' => [
+                'file' => [
+                    'class' => yii\log\FileTarget::class,
+                    'levels' => ['error', 'warning', 'info', 'trace']
+                ]
+            ],
+        ],
+        'db' => [
+            'class' => yii\db\Connection::class,
+            'dsn' => 'sqlite::memory:',
+        ],
+    ],
+    'bootstrap' => ['log']
+]);
 

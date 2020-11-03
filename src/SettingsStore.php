@@ -9,14 +9,12 @@
 declare(strict_types = 1);
 namespace dicr\settings;
 
-use yii\base\Component;
+use yii\base\Exception;
 
 /**
  * Абстрактное хранилище настроек.
- *
- * @noinspection MissingPropertyAnnotationsInspection
  */
-abstract class AbstractSettingsStore extends Component
+interface SettingsStore
 {
     /**
      * Получает значение настройки/настроек.
@@ -27,13 +25,13 @@ abstract class AbstractSettingsStore extends Component
      *  Если пустое, то возвращает ассоциативный массив всех настроек модуля.
      *
      * @param mixed $default значение по-умолчанию.
-     *  Если name задано, то значение настройки, иначе асоциативный массив значений по-умолчанию.
+     *  Если name задано, то значение настройки, иначе ассоциативный массив значений по-умолчанию.
      *
      * @return mixed если name задан то значение настройки, иначе ассоциативный массив всех настроек модуля
-     * @throws \dicr\settings\SettingsException
+     * @throws Exception
      *
      */
-    abstract public function get(string $module, string $name = null, $default = null);
+    public function get(string $module, string $name = null, $default = null);
 
     /**
      * Сохраняет значение настройки/настроек.
@@ -43,9 +41,9 @@ abstract class AbstractSettingsStore extends Component
      * @param string|array $name название параметра или ассоциативный массив параметр => значение
      * @param mixed $value значение если name как скаляр
      * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @throws Exception
      */
-    abstract public function set(string $module, $name, $value = null);
+    public function set(string $module, $name, $value = null) : self;
 
     /**
      * Удалить значение.
@@ -53,9 +51,9 @@ abstract class AbstractSettingsStore extends Component
      *
      * @param string $module название модуля/модели.
      * @param string|null $name название настройки.
-     *        Если не задано, то удаляются все настройи модуля.
+     *        Если не задано, то удаляются все настройки модуля.
      * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @throws Exception
      */
-    abstract public function delete(string $module, string $name = null);
+    public function delete(string $module, string $name = null) : self;
 }

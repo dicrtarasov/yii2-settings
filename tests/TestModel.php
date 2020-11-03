@@ -13,9 +13,6 @@ use dicr\settings\AbstractSettingsModel;
 
 /**
  * Тестовая модель
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 2019
  */
 class TestModel extends AbstractSettingsModel
 {
@@ -24,29 +21,35 @@ class TestModel extends AbstractSettingsModel
         'null' => null,
         'boolean' => false,
         'zero' => 0,
-        'float' => - 1.23,
+        'float' => -1.23,
         'string' => "Иванов Иван\nИванович",
         'array' => [
             1, 2, 'a' => 'b'
         ]
     ];
 
+    /** @var null */
     public $null;
 
+    /** @var bool */
     public $boolean;
 
+    /** @var int */
     public $zero;
 
+    /** @var $float */
     public $float;
 
+    /** @var $string */
     public $string;
 
+    /** @var $array */
     public $array;
 
     /**
      * @inheritDoc
      */
-    public function rules()
+    public function rules() : array
     {
         return [
             [['null', 'boolean', 'zero', 'float', 'string', 'array'], 'safe']

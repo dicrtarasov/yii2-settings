@@ -9,22 +9,19 @@
 declare(strict_types = 1);
 namespace dicr\settings;
 
+use yii\base\Exception;
+
 use function is_array;
 
 /**
  * Настройки, хранимые в файле PHP.
- *
- * @noinspection PhpUnused
  */
-class SerializeSettingsStore extends AbstractFileSettingsStore
+class SerializeSettingsStore extends FileSettingsStore
 {
     /**
-     * Загружает настройки из файла
-     *
-     * @return array
-     * @throws \dicr\settings\SettingsException
+     * @inheritDoc
      */
-    protected function loadFile()
+    protected function loadFile() : array
     {
         $settings = [];
 
@@ -35,7 +32,7 @@ class SerializeSettingsStore extends AbstractFileSettingsStore
             $content = @file_get_contents($this->filename);
             if ($content === false) {
                 $err = error_get_last();
-                throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
+                throw new Exception('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
             }
 
             /** @noinspection PhpUsageOfSilenceOperatorInspection */
@@ -45,7 +42,7 @@ class SerializeSettingsStore extends AbstractFileSettingsStore
 
             if (! is_array($settings)) {
                 $err = error_get_last();
-                throw new SettingsException('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
+                throw new Exception('Ошибка загрузка файла: ' . $this->filename . ': ' . $err['message']);
             }
         }
 
@@ -53,20 +50,16 @@ class SerializeSettingsStore extends AbstractFileSettingsStore
     }
 
     /**
-     * Сохраняет настройки в файл
-     *
-     * @param array $settings
-     * @return $this
-     * @throws \dicr\settings\SettingsException
+     * @inheritDoc
      */
-    protected function saveFile(array $settings)
+    protected function saveFile(array $settings) : FileSettingsStore
     {
         error_clear_last();
 
         /** @noinspection PhpUsageOfSilenceOperatorInspection */
         if (@file_put_contents($this->filename, serialize($settings), LOCK_EX) === false) {
             $err = error_get_last();
-            throw new SettingsException('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
+            throw new Exception('Ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
         }
 
         return $this;

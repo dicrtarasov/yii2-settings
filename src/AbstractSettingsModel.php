@@ -11,12 +11,14 @@ declare(strict_types = 1);
 namespace dicr\settings;
 
 use Yii;
+use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii\base\Model;
 
 /**
  * Абстрактная модель настроек.
  *
- * Используетс как синглетон через Model::instance()
+ * Используется как singleton через Model::instance()
  */
 abstract class AbstractSettingsModel extends Model
 {
@@ -24,10 +26,9 @@ abstract class AbstractSettingsModel extends Model
      * Загружает модель при создании.
      *
      * {@inheritDoc}
-     * @throws \dicr\settings\SettingsException
-     * @throws \yii\base\InvalidConfigException
+     * @throws Exception
      */
-    public function init()
+    public function init() : void
     {
         parent::init();
 
@@ -39,11 +40,11 @@ abstract class AbstractSettingsModel extends Model
      * Возвращает хранилище настроек.
      * Для переопределения в дочерних реализациях.
      *
-     * @return \dicr\settings\AbstractSettingsStore
-     * @throws \yii\base\InvalidConfigException
+     * @return SettingsStore
+     * @throws InvalidConfigException
      * @noinspection PhpIncompatibleReturnTypeInspection
      */
-    public static function store()
+    public static function store() : SettingsStore
     {
         return Yii::$app->get('settings');
     }
@@ -53,7 +54,7 @@ abstract class AbstractSettingsModel extends Model
      *
      * @return string
      */
-    public static function module()
+    public static function module() : string
     {
         return static::class;
     }
@@ -63,10 +64,9 @@ abstract class AbstractSettingsModel extends Model
      *
      * @param bool $safeOnly только безопасные атрибуты
      * @return $this
-     * @throws \dicr\settings\SettingsException
-     * @throws \yii\base\InvalidConfigException
+     * @throws Exception
      */
-    public function loadSettings(bool $safeOnly = true)
+    public function loadSettings(bool $safeOnly = true) : AbstractSettingsModel
     {
         $store = static::store();
         $module = static::module();
@@ -81,10 +81,9 @@ abstract class AbstractSettingsModel extends Model
      *
      * @param bool $validate выполнить валидацию
      * @return bool при ошибке валидации возвращает false
-     * @throws \dicr\settings\SettingsException
-     * @throws \yii\base\InvalidConfigException
+     * @throws Exception
      */
-    public function save(bool $validate = true)
+    public function save(bool $validate = true) : bool
     {
         if ($validate && ! $this->validate()) {
             return false;
