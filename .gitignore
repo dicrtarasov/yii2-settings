@@ -1,4 +1,3 @@
 /vendor/
 /runtime/
-/composer.lock
 /.phpunit.result.cache
