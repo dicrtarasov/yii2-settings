@@ -1,9 +1,9 @@
 <?php
-/**
- * @copyright 2019-2020 Dicr http://dicr.org
+/*
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 03:13:24
+ * @version 23.01.21 02:49:37
  */
 
 declare(strict_types = 1);
@@ -42,7 +42,6 @@ abstract class AbstractSettingsModel extends Model
      *
      * @return SettingsStore
      * @throws InvalidConfigException
-     * @noinspection PhpIncompatibleReturnTypeInspection
      */
     public static function store() : SettingsStore
     {

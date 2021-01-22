@@ -1,9 +1,9 @@
 <?php
-/**
- * @copyright 2019-2020 Dicr http://dicr.org
+/*
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 03:34:41
+ * @version 23.01.21 02:49:38
  */
 
 declare(strict_types = 1);
@@ -180,7 +180,6 @@ class DbSettingsStore extends Component implements SettingsStore
 
     /**
      * {@inheritdoc}
-     * @noinspection PhpMissingReturnTypeInspection
      */
     public function get(string $module, string $name = null, $default = null)
     {
@@ -201,10 +200,10 @@ class DbSettingsStore extends Component implements SettingsStore
         $query->addSelect('name')
             ->indexBy('name');
 
-
-        $values = array_map(function (string $val) {
-            return $this->decodeValue($val);
-        }, $query->column($this->db));
+        $values = array_map(
+            fn(string $val) => $this->decodeValue($val),
+            $query->column($this->db)
+        );
 
         if (is_array($default)) {
             $values = ArrayHelper::merge($default, $values);
