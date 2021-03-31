@@ -2,7 +2,7 @@
     "name": "dicr/yii2-settings",
     "type": "yii2-extension",
     "license": "MIT",
-    "description": "Компонент Yii2 для хранения настроек приложения",
+    "description": "Хранения настроек приложения в Yii2",
     "keywords": ["dicr", "yii2", "settings"],
     "homepage": "https://gitlab.com/dicr/yii2-settings",
     "authors": [
@@ -37,7 +37,7 @@
     "require-dev": {
         "ext-sqlite3": "*",
         "ext-yaml": "*",
-        "roave/security-advisories": "dev-master",
+        "roave/security-advisories": "dev-latest",
         "phpunit/phpunit": "~9.5"
     },
     "repositories": [
