@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.01.21 02:49:38
+ * @version 01.04.21 05:25:21
  */
 
 declare(strict_types = 1);
@@ -59,7 +59,7 @@ class DbSettingsStore extends Component implements SettingsStore
     public $tableName = '{{settings}}';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      * @throws Exception
      */
     public function init() : void
@@ -179,7 +179,7 @@ class DbSettingsStore extends Component implements SettingsStore
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(string $module, string $name = null, $default = null)
     {
@@ -213,7 +213,7 @@ class DbSettingsStore extends Component implements SettingsStore
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function set(string $module, $name, $value = null) : SettingsStore
     {
@@ -239,7 +239,7 @@ class DbSettingsStore extends Component implements SettingsStore
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete(string $module, string $name = null) : SettingsStore
     {

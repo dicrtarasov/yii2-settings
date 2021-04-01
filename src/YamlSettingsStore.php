@@ -1,9 +1,9 @@
 <?php
-/**
- * @copyright 2019-2020 Dicr http://dicr.org
+/*
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.02.20 07:04:36
+ * @version 01.04.21 05:30:59
  */
 
 /** @noinspection PhpComposerExtensionStubsInspection */
@@ -24,18 +24,14 @@ class YamlSettingsStore extends FileSettingsStore
     /**
      * @inheritDoc
      */
-    protected function loadFile() : array
+    protected function loadFile(): array
     {
         $settings = [];
 
         if (file_exists($this->filename)) {
-            error_clear_last();
-
-            /** @noinspection PhpUsageOfSilenceOperatorInspection */
-            $settings = @yaml_parse_file($this->filename);
+            $settings = yaml_parse_file($this->filename);
             if (! is_array($settings)) {
-                $err = error_get_last();
-                throw new Exception('Ошибка загрузки файла: ' . $this->filename . ': ' . $err['message']);
+                throw new Exception('Ошибка загрузки файла: ' . $this->filename);
             }
         }
 
@@ -45,14 +41,10 @@ class YamlSettingsStore extends FileSettingsStore
     /**
      * @inheritDoc
      */
-    protected function saveFile(array $settings) : FileSettingsStore
+    protected function saveFile(array $settings): FileSettingsStore
     {
-        error_clear_last();
-
-        /** @noinspection PhpUsageOfSilenceOperatorInspection */
-        if (! @yaml_emit_file($this->filename, $settings, YAML_UTF8_ENCODING, YAML_LN_BREAK)) {
-            $err = error_get_last();
-            throw new Exception('ошибка сохранения файла: ' . $this->filename . ': ' . $err['message']);
+        if (! yaml_emit_file($this->filename, $settings, YAML_UTF8_ENCODING, YAML_LN_BREAK)) {
+            throw new Exception('ошибка сохранения файла: ' . $this->filename);
         }
 
         return $this;

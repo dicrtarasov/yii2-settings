@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.01.21 02:49:37
+ * @version 01.04.21 05:33:20
  */
 
 declare(strict_types = 1);
@@ -23,9 +23,7 @@ use yii\base\Model;
 abstract class AbstractSettingsModel extends Model
 {
     /**
-     * Загружает модель при создании.
-     *
-     * {@inheritDoc}
+     * @inheritDoc
      * @throws Exception
      */
     public function init() : void
