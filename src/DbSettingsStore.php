@@ -2,8 +2,8 @@
 /*
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
- * @license proprietary
- * @version 01.04.21 05:25:21
+ * @license GPL-3.0-or-later
+ * @version 14.05.21 23:10:30
  */
 
 declare(strict_types = 1);
@@ -28,8 +28,6 @@ use function is_array;
 
 /**
  * Настройки, хранимые в таблице базы данных.
- *
- * @noinspection MissingPropertyAnnotationsInspection
  */
 class DbSettingsStore extends Component implements SettingsStore
 {
@@ -110,8 +108,6 @@ class DbSettingsStore extends Component implements SettingsStore
      */
     protected function encodeValue($value) : string
     {
-        $encoded = null;
-
         try {
             switch ($this->format) {
                 case self::FORMAT_STRING:
@@ -142,7 +138,6 @@ class DbSettingsStore extends Component implements SettingsStore
      *
      * @param ?string $value
      * @return mixed
-     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function decodeValue(?string $value)
     {

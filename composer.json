@@ -1,7 +1,7 @@
 {
     "name": "dicr/yii2-settings",
     "type": "yii2-extension",
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "description": "Хранения настроек приложения в Yii2",
     "keywords": ["dicr", "yii2", "settings"],
     "homepage": "https://gitlab.com/dicr/yii2-settings",

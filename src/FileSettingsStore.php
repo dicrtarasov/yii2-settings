@@ -2,8 +2,8 @@
 /*
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
- * @license proprietary
- * @version 01.04.21 05:25:21
+ * @license GPL-3.0-or-later
+ * @version 14.05.21 23:11:01
  */
 
 declare(strict_types = 1);
@@ -21,7 +21,6 @@ use function is_array;
  * Настройки, хранимые в файле PHP.
  *
  * @property array[] $settings все значения всех модулей.
- * @noinspection MissingPropertyAnnotationsInspection
  */
 abstract class FileSettingsStore extends Component implements SettingsStore
 {
@@ -44,7 +43,6 @@ abstract class FileSettingsStore extends Component implements SettingsStore
 
     /**
      * @inheritDoc
-     * @noinspection PhpMissingReturnTypeInspection
      */
     public function get(string $module, string $name = null, $default = null)
     {
@@ -53,8 +51,7 @@ abstract class FileSettingsStore extends Component implements SettingsStore
             return $settings[$module][$name] ?? $default;
         }
 
-        /** @noinspection UnnecessaryCastingInspection */
-        return array_merge((array)($default ?: []), (array)($settings[$module] ?? []));
+        return array_merge((array)($default ?: []), $settings[$module] ?? []);
     }
 
     /**
